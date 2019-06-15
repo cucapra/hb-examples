@@ -8,7 +8,14 @@ Running the Examples
 --------------------
 
 Then, the best way to actually run the examples is with [Chazz][].
-Instructions forthcoming.
+Set it up, then do something like this to send this repository to the server:
+
+    $ chazz -i v1.0.0 sync -w . mystuff
+
+Then, in another terminal, type `chazz -i v1.0.0 ssh` and then:
+
+    $ cd mystuff
+    $ make -C noop run
 
 Each example comes with a `run` target in its Makefile, so just type `make run` to build and execute the example.
 The current version of the HammerBlade image (v1.0.0) has a bug where, after running a program on the device, it locks up and you can't run another program.
