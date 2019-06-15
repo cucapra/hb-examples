@@ -1,3 +1,8 @@
+// The HammerBlade headers require these definitions before we include them.
+// TK Find out why this is.
+#define _BSD_SOURCE
+#define _XOPEN_SOURCE 500
+
 #include <bsg_manycore_cuda.h>
 #include <stdio.h>
 
