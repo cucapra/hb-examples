@@ -32,9 +32,16 @@ int main(int argc, const char **argv) {
     // Set up the "tile groups" and "grid." We also specify the function
     // name and set the arguments (`argc` and `argv`) for the function we'll
     // eventually call.
-    // TK I don't know what a "tile group" or a "grid" actually is.
+    // The dimensions of the tile group are set to 4x3 here, which matches
+    // some build-time parameters set in our Makefile---I believe 4x3 the size
+    // of the largest useful tile group because the first row is used for IO.
+    // `grid_dim` seems to control the _number_ of 4x3 tile groups---it seems
+    // like this should _always_ be 1x1 (I'm not sure why you would want
+    // anything isle).
+    // TK Check that 4x3 is indeed the largest usable size on F1.
+    // TK I don't entirely know what a "tile group" or a "grid" actually is.
 	hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
-	hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
+	hb_mc_dimension_t tg_dim = {.x = 4, .y = 3};
 	err = hb_mc_grid_init(&device, grid_dim, tg_dim, "noop", 0, NULL);
 	if (err != HB_MC_SUCCESS) {
 		fprintf(stderr, "error in hb_mc_grid_init\n");
