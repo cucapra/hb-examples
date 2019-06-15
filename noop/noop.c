@@ -1,6 +1,7 @@
-// Include these two headers for access to intrinsics for the manycore.
+// Include these headers the intrinsics that device code needs.
 #include "bsg_manycore.h"
 #include "bsg_set_tile_x_y.h"
+#include "bsg_cuda_lite_runtime.h"
 
 // This is the function that we'll call (by name) from the host.
 // TK I don't know if the return value is significant.
