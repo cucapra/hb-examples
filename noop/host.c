@@ -23,7 +23,7 @@ int main(int argc, const char **argv) {
 
     // Load the RISC-V binary onto the device.
     // TK I don't know if the `alloc_name` parameter does anything important.
-	err = hb_mc_device_program_init(&device, "main.riscv", "example", 0);
+	err = hb_mc_device_program_init(&device, "noop.riscv", "example", 0);
 	if (err != HB_MC_SUCCESS) {
 		fprintf(stderr, "error in hb_mc_device_program_init\n");
 		return err;
