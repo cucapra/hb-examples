@@ -20,7 +20,7 @@ int do_report(int32_t *outvals, size_t size) {
 
     // Allocate space on the device for the result.
     eva_t out_addr;
-    err = hb_mc_device_malloc(&device, sizeof(int32_t), &out_addr);
+    err = hb_mc_device_malloc(&device, size, &out_addr);
     if (err) return err;
 
     // Set up the grid, group, and function. There's only one argument.
@@ -59,7 +59,7 @@ const char *VALUE_NAMES[] = {
 
 int main(int argc, const char **argv) {
     int32_t vals[TILE_COUNT][VALUE_COUNT];
-    int err = do_report(vals[0], sizeof(uint32_t) * TILE_COUNT * VALUE_COUNT);
+    int err = do_report(vals[0], sizeof(int32_t) * TILE_COUNT * VALUE_COUNT);
     if (err) return err;
 
     for (size_t i = 0; i < TILE_COUNT; ++i) {

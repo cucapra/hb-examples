@@ -31,7 +31,7 @@ The examples are arranged in order of increasing complexity:
 
 - `noop`: Just execute a function on the device that does literally nothing at all.
 - `add`: Add together two integers passed via DRAM. Shows how to "malloc" space on the device, "memcpy" input data into this space, pass arguments to device-side functions, and copy outputs back out from the device.
-- `report`: Get the SPMD-style identifying information for every tile in a group. Demonstrates such mysterious magic as `__bsg_id` and `__bsg_grid_dim_x`.
+- `report`: Get the SPMD-style identifying information for every tile in a group. Demonstrates such mysterious magic as `__bsg_id` and `__bsg_grid_dim_x`. Shows how to use them to "divide up" a buffer into per-value segments.
 
 
 Tips for Hacking Locally
