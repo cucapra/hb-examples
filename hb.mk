@@ -21,12 +21,11 @@ clean:
 HOST_OBJS := $(HOST_SRCS:.c=.o)
 HOST_CFLAGS := -std=c11 -lbsg_manycore_runtime
 HOST_CC := cc
-HOST_HEADER := f1_helper.h
 
 $(HOST_TARGET): $(HOST_OBJS)
 	$(HOST_CC) $(HOST_CFLAGS) $^ -o $@
 
-$(HOST_OBJS): %.o: %.c $(HOST_HEADER)
+$(HOST_OBJS): %.o: %.c
 	$(HOST_CC) $(HOST_CFLAGS) -c $< -o $@
 
 
