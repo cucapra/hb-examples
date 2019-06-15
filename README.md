@@ -33,6 +33,8 @@ The examples are arranged in order of increasing complexity:
 - `add`: Add together two integers passed via DRAM. Shows how to "malloc" space on the device, "memcpy" input data into this space, pass arguments to device-side functions, and copy outputs back out from the device.
 - `report`: Get the SPMD-style identifying information for every tile in a group. Demonstrates such mysterious magic as `__bsg_id` and `__bsg_grid_dim_x`. Shows how to use them to "divide up" a buffer into per-value segments.
 
+There is also an old example, `v0.4.2-vvadd`, which only works on an earlier version. It demonstrates a much different style of host/device communication that does not use the higher-level, "CUDA-style" API.
+
 
 Tips for Hacking Locally
 ------------------------
