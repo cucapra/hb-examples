@@ -9,13 +9,13 @@ int do_add(int32_t src1, int32_t src2, int32_t *dest) {
     int err;
 
     // Initialize the device.
-	hb_mc_device_t device;
-	hb_mc_dimension_t mesh_dim = {.x = 2, .y = 2};
-	err = hb_mc_device_init(&device, "example", 0,  mesh_dim);
+    hb_mc_device_t device;
+    hb_mc_dimension_t mesh_dim = {.x = 2, .y = 2};
+    err = hb_mc_device_init(&device, "example", 0,  mesh_dim);
     if (err) return err;
 
     // Load the `add.riscv` program.
-	err = hb_mc_device_program_init(&device, "add.riscv", "example", 0);
+    err = hb_mc_device_program_init(&device, "add.riscv", "example", 0);
     if (err) return err;
 
     // Allocate space on the device for the three arguments we'll pass to the
@@ -26,8 +26,8 @@ int do_add(int32_t src1, int32_t src2, int32_t *dest) {
     err |= hb_mc_device_malloc(&device, sizeof(int32_t), &src2_addr);
     err |= hb_mc_device_malloc(&device, sizeof(int32_t), &dest_addr);
     if (err) {
-		fprintf(stderr, "hb_mc_device_malloc failed\n");
-		return err;
+        fprintf(stderr, "hb_mc_device_malloc failed\n");
+        return err;
     }
 
     // Copy input data into the newly allocated space.
@@ -38,8 +38,8 @@ int do_add(int32_t src1, int32_t src2, int32_t *dest) {
     err |= hb_mc_device_memcpy(&device, (void*)((intptr_t)src2_addr),
         &src2, sizeof(int32_t), hb_mc_memcpy_to_device);
     if (err) {
-		fprintf(stderr, "hb_mc_device_memcpy to device failed\n");
-		return err;
+        fprintf(stderr, "hb_mc_device_memcpy to device failed\n");
+        return err;
     }
 
     // The arguments to pass to the device-side function. While the type here
@@ -50,25 +50,25 @@ int do_add(int32_t src1, int32_t src2, int32_t *dest) {
     // Set up the tile group, dimensions, and function to call. The last two
     // arguments to `hb_mc_grid_init` specify the arguments to the `add`
     // function in the device code.
-	hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
-	hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
-	err = hb_mc_grid_init(&device, grid_dim, tg_dim, "add", 3, args);
+    hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
+    hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
+    err = hb_mc_grid_init(&device, grid_dim, tg_dim, "add", 3, args);
     if (err) return err;
 
     // Run the function.
-	err = hb_mc_device_tile_groups_execute(&device);
+    err = hb_mc_device_tile_groups_execute(&device);
     if (err) return err;
 
     // Collect the result by copying output data back over from the device.
     err = hb_mc_device_memcpy(&device, dest, (void*)((intptr_t)dest_addr),
         sizeof(int32_t), hb_mc_memcpy_to_host);
     if (err) {
-		fprintf(stderr, "hb_mc_device_memcpy to host failed\n");
-		return err;
+        fprintf(stderr, "hb_mc_device_memcpy to host failed\n");
+        return err;
     }
 
     // Clean up.
-	err = hb_mc_device_finish(&device);
+    err = hb_mc_device_finish(&device);
     if (err) return err;
 }
 
@@ -90,5 +90,5 @@ int main(int argc, const char **argv) {
     // Print the answer!!!1
     printf("%i + %i = %i\n", src1, src2, dest);
 
-	return 0;
+    return 0;
 }

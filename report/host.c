@@ -9,13 +9,13 @@ int do_report(int32_t *outvals, size_t size) {
     int err;
 
     // Initialize the device.
-	hb_mc_device_t device;
-	hb_mc_dimension_t mesh_dim = {.x = 2, .y = 2};
-	err = hb_mc_device_init(&device, "example", 0,  mesh_dim);
+    hb_mc_device_t device;
+    hb_mc_dimension_t mesh_dim = {.x = 2, .y = 2};
+    err = hb_mc_device_init(&device, "example", 0,  mesh_dim);
     if (err) return err;
 
     // Load the `report.riscv` program.
-	err = hb_mc_device_program_init(&device, "report.riscv", "example", 0);
+    err = hb_mc_device_program_init(&device, "report.riscv", "example", 0);
     if (err) return err;
 
     // Allocate space on the device for the result.
@@ -24,13 +24,13 @@ int do_report(int32_t *outvals, size_t size) {
     if (err) return err;
 
     // Set up the grid, group, and function. There's only one argument.
-	hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
-	hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
-	err = hb_mc_grid_init(&device, grid_dim, tg_dim, "report", 1, &out_addr);
+    hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
+    hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
+    err = hb_mc_grid_init(&device, grid_dim, tg_dim, "report", 1, &out_addr);
     if (err) return err;
 
     // Run the function.
-	err = hb_mc_device_tile_groups_execute(&device);
+    err = hb_mc_device_tile_groups_execute(&device);
     if (err) return err;
 
     // Collect the result by copying output data back over from the device.
@@ -39,7 +39,7 @@ int do_report(int32_t *outvals, size_t size) {
     if (err) return err;
 
     // Clean up.
-	err = hb_mc_device_finish(&device);
+    err = hb_mc_device_finish(&device);
     if (err) return err;
 }
 
@@ -69,5 +69,5 @@ int main(int argc, const char **argv) {
         }
     }
 
-	return 0;
+    return 0;
 }
