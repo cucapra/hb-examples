@@ -31,8 +31,8 @@ $(HOST_OBJS): %.o: %.c
 
 # Include bsg_manycore Make infrastructure.
 
-bsg_tiles_X := 4
-bsg_tiles_Y := 3
+bsg_tiles_X := 2
+bsg_tiles_Y := 2
 
 BSG_MANYCORE_DIR := $(wildcard /home/centos/bsg_bladerunner/bsg_manycore_*)
 include $(BSG_MANYCORE_DIR)/software/mk/Makefile.dimensions

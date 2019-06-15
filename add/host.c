@@ -10,7 +10,7 @@ int do_add(int src1, int src2, int *dest) {
 
     // Initialize the device.
 	hb_mc_device_t device;
-	hb_mc_dimension_t mesh_dim = {.x = 4, .y = 4};
+	hb_mc_dimension_t mesh_dim = {.x = 2, .y = 2};
 	err = hb_mc_device_init(&device, "example", 0,  mesh_dim);
     if (err) return err;
 
@@ -44,7 +44,7 @@ int do_add(int src1, int src2, int *dest) {
 
     // Set up the tile group, dimensions, and function to call.
 	hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
-	hb_mc_dimension_t tg_dim = {.x = 4, .y = 3};
+	hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
 	err = hb_mc_grid_init(&device, grid_dim, tg_dim, "add", 0, NULL);
     if (err) return err;
 

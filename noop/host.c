@@ -14,7 +14,7 @@ int main(int argc, const char **argv) {
     // TK I don't know what a "mesh" actually is.
     // TK I don't know if the "name" parameter here matters.
 	hb_mc_device_t device;
-	hb_mc_dimension_t mesh_dim = {.x = 4, .y = 4};
+	hb_mc_dimension_t mesh_dim = {.x = 2, .y = 2};
 	err = hb_mc_device_init(&device, "example", 0,  mesh_dim);
 	if (err != HB_MC_SUCCESS) {
         fprintf(stderr, "error in hb_mc_device_init\n");
@@ -32,16 +32,17 @@ int main(int argc, const char **argv) {
     // Set up the "tile groups" and "grid." We also specify the function
     // name and set the arguments (`argc` and `argv`) for the function we'll
     // eventually call.
-    // The dimensions of the tile group are set to 4x3 here, which matches
-    // some build-time parameters set in our Makefile---I believe 4x3 the size
-    // of the largest useful tile group because the first row is used for IO.
-    // `grid_dim` seems to control the _number_ of 4x3 tile groups---it seems
-    // like this should _always_ be 1x1 (I'm not sure why you would want
-    // anything isle).
-    // TK Check that 4x3 is indeed the largest usable size on F1.
+    // The dimensions of the tile group are set to 2x2 here, which matches
+    // some build-time parameters set in our Makefile. 2x2 is the largest tile
+    // group I have gotten to work yet---I would have assumed 4x3 would work
+    // (4x4, but with the first row taken up by I/O tiles), but this is where
+    // we are for now. `grid_dim` seems to control the _number_ of 2x2 tile
+    // groups---it seems like this should _always_ be 1x1 (I'm not sure why
+    // you would want anything else).
+    // TK Check that 2x2 is indeed the largest usable size on F1.
     // TK I don't entirely know what a "tile group" or a "grid" actually is.
 	hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
-	hb_mc_dimension_t tg_dim = {.x = 4, .y = 3};
+	hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
 	err = hb_mc_grid_init(&device, grid_dim, tg_dim, "noop", 0, NULL);
 	if (err != HB_MC_SUCCESS) {
 		fprintf(stderr, "error in hb_mc_grid_init\n");
