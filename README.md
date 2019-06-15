@@ -10,9 +10,9 @@ Running the Examples
 Then, the best way to actually run the examples is with [Chazz][].
 Set it up, then do something like this to send this repository to the server:
 
-    $ chazz -i v1.0.0 sync -w . mystuff
+    $ chazz sync -w . mystuff
 
-Then, in another terminal, type `chazz -i v1.0.0 ssh` and then:
+Then, in another terminal, type `chazz ssh` and then:
 
     $ cd mystuff
     $ make -C noop run
