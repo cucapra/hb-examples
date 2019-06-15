@@ -5,17 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, const char **argv) {
+int do_add(int src1, int src2, int *dest) {
     int err;
-
-    // We take two arguments from the command line.
-    uint32_t src1, src2;
-    if (argc < 3) {
-        fprintf(stderr, "usage: %s num1 num2\n", argv[0]);
-        return 1;
-    }
-    src1 = atoi(argv[1]);
-    src2 = atoi(argv[2]);
 
     // Initialize the device.
 	hb_mc_device_t device;
@@ -62,8 +53,7 @@ int main(int argc, const char **argv) {
     if (err) return err;
 
     // Collect the result by copying output data back over from the device.
-    uint32_t dest;
-    err = hb_mc_device_memcpy(&device, &dest, (void*)((intptr_t)dest_addr),
+    err = hb_mc_device_memcpy(&device, dest, (void*)((intptr_t)dest_addr),
         sizeof(uint32_t), hb_mc_memcpy_to_host);
     if (err) {
 		fprintf(stderr, "hb_mc_device_memcpy to host failed\n");
@@ -72,6 +62,22 @@ int main(int argc, const char **argv) {
 
     // Clean up.
 	err = hb_mc_device_finish(&device);
+    if (err) return err;
+}
+
+int main(int argc, const char **argv) {
+    // We take two arguments from the command line.
+    uint32_t src1, src2;
+    if (argc < 3) {
+        fprintf(stderr, "usage: %s num1 num2\n", argv[0]);
+        return 1;
+    }
+    src1 = atoi(argv[1]);
+    src2 = atoi(argv[2]);
+
+    // Do the addition on the device.
+    uint32_t dest;
+    int err = do_add(src1, src2, &dest);
     if (err) return err;
 
     // Print the answer!!!1
