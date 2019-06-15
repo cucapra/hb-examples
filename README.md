@@ -27,17 +27,28 @@ That's while you'll see an `fpga-load-local-image` command in each `run` recipe:
 Tips for Hacking Locally
 ------------------------
 
-For more enjoyable hacking, you'll want to get [HammerBlade F1 headers][hbf1lib] and set your editor's include path to point to them.
+For more enjoyable hacking, you'll want to get [HammerBlade F1 headers][hbf1lib] and [manycore headers][mclib] and set your editor's include path to point to them.
 These examples currently target v1.0.0, so do something like this:
 
     $ git clone https://github.com/bespoke-silicon-group/bsg_f1.git
     $ cd bsg_f1
     $ git checkout 92643b8
+    $ cd ..
+    $ git clone https://github.com/bespoke-silicon-group/bsg_manycore.git
+    $ cd bsg_manycore
+    $ git checkout 8241449
 
-On a Mac, I had to make a few changes to make things compile: delete all the contents of `bsg_manycore_features.h`, leaving an empty file, and change every occurrence of `#include <endian.h>` to `#include <machine/endian.h>`.
-Then, configure your editor to add `bsg_f1/cl_manycore/libraries` as an include path.
+On a Mac, I had to make a few changes to make things compile: within `bsg_f1/cl_manycore/libraries`, delete the entire contents of `bsg_manycore_features.h`, leaving an empty file, and change every occurrence of `#include <endian.h>` to `#include <machine/endian.h>`.
+
+Then, configure your editor to add these include paths (starting from wherever you checked out the two repositories):
+
+    bsg_f1/cl_manycore/libraries
+    bsg_manycore/software/bsg_manycore_lib
+
+The former has headers for host code, and the latter has headers for device code.
 
 [hbf1lib]: https://github.com/bespoke-silicon-group/bsg_f1/tree/master/cl_manycore/libraries
+[mclib]: https://github.com/bespoke-silicon-group/bsg_manycore/tree/master/software/bsg_manycore_lib
 
 
 The Examples
