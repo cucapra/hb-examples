@@ -46,4 +46,4 @@ The Examples
 The examples are arranged in order of increasing complexity:
 
 - `noop`: Just execute a function on the device that does literally nothing at all.
-- `add`: Add together two integers passed via DRAM. Shows how to "malloc" space on the device, "memcpy" input data into this space, and copy outputs back out from the device.
+- `add`: Add together two integers passed via DRAM. Shows how to "malloc" space on the device, "memcpy" input data into this space, pass arguments to device-side functions, and copy outputs back out from the device.

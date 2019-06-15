@@ -42,10 +42,17 @@ int do_add(int32_t src1, int32_t src2, int32_t *dest) {
 		return err;
     }
 
-    // Set up the tile group, dimensions, and function to call.
+    // The arguments to pass to the device-side function. While the type here
+    // is uint32_t, these are all actually pointers---arguments must be
+    // word-sized numbers.
+    uint32_t args[] = {src1_addr, src2_addr, dest_addr};
+
+    // Set up the tile group, dimensions, and function to call. The last two
+    // arguments to `hb_mc_grid_init` specify the arguments to the `add`
+    // function in the device code.
 	hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
 	hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
-	err = hb_mc_grid_init(&device, grid_dim, tg_dim, "add", 0, NULL);
+	err = hb_mc_grid_init(&device, grid_dim, tg_dim, "add", 3, args);
     if (err) return err;
 
     // Run the function.
