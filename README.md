@@ -24,6 +24,15 @@ That's while you'll see an `fpga-load-local-image` command in each `run` recipe:
 [chazz]: https://github.com/cucapra/chazz
 
 
+The Examples
+------------
+
+The examples are arranged in order of increasing complexity:
+
+- `noop`: Just execute a function on the device that does literally nothing at all.
+- `add`: Add together two integers passed via DRAM. Shows how to "malloc" space on the device, "memcpy" input data into this space, pass arguments to device-side functions, and copy outputs back out from the device.
+
+
 Tips for Hacking Locally
 ------------------------
 
@@ -49,12 +58,3 @@ The former has headers for host code, and the latter has headers for device code
 
 [hbf1lib]: https://github.com/bespoke-silicon-group/bsg_f1/tree/master/cl_manycore/libraries
 [mclib]: https://github.com/bespoke-silicon-group/bsg_manycore/tree/master/software/bsg_manycore_lib
-
-
-The Examples
-------------
-
-The examples are arranged in order of increasing complexity:
-
-- `noop`: Just execute a function on the device that does literally nothing at all.
-- `add`: Add together two integers passed via DRAM. Shows how to "malloc" space on the device, "memcpy" input data into this space, pass arguments to device-side functions, and copy outputs back out from the device.
