@@ -51,7 +51,7 @@ These examples currently target v1.0.0, so do something like this:
     $ cd bsg_manycore
     $ git checkout 8241449
 
-On a Mac, I had to make a few changes to make things compile: within `bsg_f1/cl_manycore/libraries`, delete the entire contents of `bsg_manycore_features.h`, leaving an empty file, and change every occurrence of `#include <endian.h>` to `#include <machine/endian.h>`.
+On a Mac, you need a few changes to make things compile: delete the entire contents of `bsg_f1/cl_manycore/libraries/bsg_manycore_features.h`, and change every occurrence of `#include <endian.h>` to `#include <machine/endian.h>` (patch for this off of 92643b8 [here][bsg_f1_macos_patch]).
 
 Then, configure your editor to add these include paths (starting from wherever you checked out the two repositories):
 
@@ -62,3 +62,4 @@ The former has headers for host code, and the latter has headers for device code
 
 [hbf1lib]: https://github.com/bespoke-silicon-group/bsg_f1/tree/master/cl_manycore/libraries
 [mclib]: https://github.com/bespoke-silicon-group/bsg_manycore/tree/master/software/bsg_manycore_lib
+[bsg_f1_macos_patch]: https://gist.github.com/avanhatt/d6df1eb375486f8aee9f8a74e8303168
