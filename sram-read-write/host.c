@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int do_dram_read_write(int32_t src, int32_t *dest) {
+int do_sram_read_write(int32_t *dest) {
     int err;
 
     // Initialize the device.
@@ -17,11 +17,11 @@ int do_dram_read_write(int32_t src, int32_t *dest) {
     err = hb_mc_device_init(&device, "example", 0,  mesh_dim);
     if (err) return err;
 
-    // Load the `dram-read-write.riscv` program to be run on device.
-    err = hb_mc_device_program_init(&device, "dram-read-write.riscv", "example", 0);
+    // Load the `sram-read-write.riscv` program to be run on device.
+    err = hb_mc_device_program_init(&device, "sram-read-write.riscv", "example", 0);
     if (err) return err;
 
-    // Look up the global value by symbol name in the device DRAM. "EVA" is for
+    // Look up the global value by symbol name in the device SRAM. "EVA" is for
     // "endpoint virtual address," and it represents an address in the device's
     // memory.
     hb_mc_eva_t global_value_eva; 
@@ -32,30 +32,35 @@ int do_dram_read_write(int32_t src, int32_t *dest) {
         return err;
     }
 
-    // Lookup the host coordinates and EVA write the single source value. We use
-    // the host coordinates because the symbols we want to access are marked as
-    // DRAM with __attribute__((section(".dram")))
-    hb_mc_coordinate_t host_coordinate = hb_mc_manycore_get_host_coordinate(device.mc); 
-    err =  hb_mc_manycore_eva_write(device.mc, &default_map, &host_coordinate, 
-        &global_value_eva, &src, sizeof(int32_t));
-    if (err != HB_MC_SUCCESS) { 
-        fprintf(stderr, "hb_mc_manycore_eva_write failed\n");
-        return err;
-    }  
-
     // Set up the tile group, dimensions, and function to call. The last two
     // arguments to `hb_mc_grid_init` specify the (empty) arguments to 
-    // dram_read_write
+    // sram_read_write
     hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
     hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
-    err = hb_mc_grid_init(&device, grid_dim, tg_dim, "dram_read_write", 0, NULL);
+    err = hb_mc_grid_init(&device, grid_dim, tg_dim, "local_sram_read_write", 0, NULL);
     if (err) return err;
+
+    for (int32_t i = 0; i < 4; i++) {
+        // Get the tile coordinate for each tile. Not that because the first row 
+        // is reserved for I/O, tile ID 0 corresponds to coordinate (0, 1) and
+        // so on. We use the tile coordinates because we want to write different
+        // values per tile.
+        hb_mc_coordinate_t tile_coordinate = device.mesh->tiles[i].coord;
+
+        // Write a _different_ value per tile (in this case, the tile ID)
+        err =  hb_mc_manycore_eva_write(device.mc, &default_map, &tile_coordinate, 
+            &global_value_eva, &i, sizeof(int32_t));
+        if (err != HB_MC_SUCCESS) { 
+            fprintf(stderr, "hb_mc_manycore_eva_write failed\n");
+            return err;
+        }  
+    }
 
     // Run the function.
     err = hb_mc_device_tile_groups_execute(&device);
     if (err) return err;
 
-    // Lookup the start of the return EVA
+    // Lookup the return EVA
     hb_mc_eva_t global_return_eva; 
     err = hb_mc_loader_symbol_to_eva(device.program->bin, device.program->bin_size,
         "global_return", &global_return_eva); 
@@ -64,12 +69,16 @@ int do_dram_read_write(int32_t src, int32_t *dest) {
         return err;
     }
 
-    // EVA read the single return value
-    err = hb_mc_manycore_eva_read(device.mc, &default_map, &host_coordinate,
-        &global_return_eva, dest, sizeof(int32_t[TILES])); 
-    if (err) {
-        fprintf(stderr, "hb_mc_device_memcpy to host failed\n");
-        return err;
+
+    // EVA read the four different return values
+    for (int32_t i = 0; i < 4; i++) {
+        hb_mc_coordinate_t tile_coordinate = device.mesh->tiles[i].coord;
+        err = hb_mc_manycore_eva_read(device.mc, &default_map, &tile_coordinate,
+            &global_return_eva, &(dest[i]), sizeof(int32_t[TILES])); 
+        if (err) {
+            fprintf(stderr, "hb_mc_device_memcpy to host failed\n");
+            return err;
+        }
     }
 
     // Clean up.
@@ -78,23 +87,14 @@ int do_dram_read_write(int32_t src, int32_t *dest) {
 }
 
 int main(int argc, const char **argv) {
-    // We take an argument from the command line for the starting number
-    int32_t src;
-    if (argc < 2) {
-        fprintf(stderr, "usage: %s num1\n", argv[0]);
-        return 1;
-    }
-    src = atoi(argv[1]);
-
-    // Read and write from DRAM!
+    // Read and write from SRAM!
     int32_t dest[TILES];
-    int err = do_dram_read_write(src, dest);
+    int err = do_sram_read_write(dest);
     if (err) {
         return err;
     }
 
-    // Print the answer!
-    printf("Value written value: %i\n", src);
+    // Print the value per tile (should be twice the tile ID)!
     for (int i = 0; i < TILES; ++i){
         printf("Value read from tile %i: %i\n", i, dest[i]);
     }
