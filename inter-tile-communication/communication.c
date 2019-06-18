@@ -5,7 +5,6 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
 
 // Set up the completion barrier.
 #define BSG_TILE_GROUP_X_DIM bsg_tiles_X
@@ -15,10 +14,10 @@ INIT_TILE_GROUP_BARRIER(r_barrier, c_barrier, 0, bsg_tiles_X - 1, 0,
     bsg_tiles_Y - 1);
 
 // Statically allocate space for a value (on each core)
-int32_t value;
+volatile int32_t value;
 
 // Statically allocate a flag for whether the value is ready
-int32_t ready; 
+volatile int32_t ready; 
 
 int communicate(int32_t *src, int32_t *dest) {
     int x, y;

@@ -32,7 +32,8 @@ The examples are arranged in order of increasing complexity:
 - `noop`: Just execute a function on the device that does literally nothing at all.
 - `add`: Add together two integers passed via DRAM. Shows how to "malloc" space on the device, "memcpy" input data into this space, pass arguments to device-side functions, and copy outputs back out from the device.
 - `report`: Get the SPMD-style identifying information for every tile in a group. Demonstrates such mysterious magic as `__bsg_id` and `__bsg_grid_dim_x`. Shows how to use them to "divide up" a buffer into per-tile segments.
-- `inter-tile-communication`: Demonstrate simple inter-core communication. Each core passes a single value by writing into the next core's memory. Demonstrates basic synchronization with `bsg_wait_while` and `bsg_remote_store`. 
+- `dram-read-write`: Demonstrates reading and writing from device DRAM using the lower-level API and symbol name lookups. Each tile reads a global value, and writes that value plus their tile ID to a return array.
+- `inter-tile-communication`: Shows simple inter-tile communication. Each tile passes a single value by writing into the next tile's memory. Demonstrates basic synchronization with `bsg_wait_while` and `bsg_remote_store`. 
 
 There is also an old example, `v0.4.2-vvadd`, which only works on an earlier version. It demonstrates a much different style of host/device communication that does not use the higher-level, "CUDA-style" API.
 
