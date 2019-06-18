@@ -41,25 +41,18 @@ Tips for Hacking Locally
 ------------------------
 
 For more enjoyable hacking, you'll want to get [HammerBlade F1 headers][hbf1lib] and [manycore headers][mclib] and set your editor's include path to point to them.
-These examples currently target v1.0.0, so do something like this:
-
-    $ git clone https://github.com/bespoke-silicon-group/bsg_f1.git
-    $ cd bsg_f1
-    $ git checkout 92643b8
-    $ cd ..
-    $ git clone https://github.com/bespoke-silicon-group/bsg_manycore.git
-    $ cd bsg_manycore
-    $ git checkout 8241449
+A simple way to do that is to check out the [Bladerunner][] repository and run `make checkout-repos` to clone the component repositories and move to the right revision.
 
 On a Mac, you need a few changes to make things compile: delete the entire contents of `bsg_f1/cl_manycore/libraries/bsg_manycore_features.h`, and change every occurrence of `#include <endian.h>` to `#include <machine/endian.h>` (patch for this off of 92643b8 [here][bsg_f1_macos_patch]).
 
-Then, configure your editor to add these include paths (starting from wherever you checked out the two repositories):
+Then, configure your editor to add these include paths (starting from wherever you checked out [`bsg_bladerunner`][bladerunner]):
 
-    bsg_f1/cl_manycore/libraries
-    bsg_manycore/software/bsg_manycore_lib
+    bsg_bladerunner/bsg_f1_92643b8/cl_manycore/libraries
+    bsg_bladerunner/bsg_manycore_8241449/software/bsg_manycore_lib
 
 The former has headers for host code, and the latter has headers for device code.
 
 [hbf1lib]: https://github.com/bespoke-silicon-group/bsg_f1/tree/master/cl_manycore/libraries
 [mclib]: https://github.com/bespoke-silicon-group/bsg_manycore/tree/master/software/bsg_manycore_lib
 [bsg_f1_macos_patch]: https://gist.github.com/avanhatt/d6df1eb375486f8aee9f8a74e8303168
+[bladerunner]: https://github.com/bespoke-silicon-group/bsg_bladerunner
