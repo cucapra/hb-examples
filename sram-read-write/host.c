@@ -40,8 +40,8 @@ int do_sram_read_write(int32_t *dest) {
     err = hb_mc_grid_init(&device, grid_dim, tg_dim, "local_sram_read_write", 0, NULL);
     if (err) return err;
 
-    for (int32_t i = 0; i < 4; i++) {
-        // Get the tile coordinate for each tile. Not that because the first row 
+    for (int32_t i = 0; i < TILES; i++) {
+        // Get the tile coordinate for each tile. Note that because the first row 
         // is reserved for I/O, tile ID 0 corresponds to coordinate (0, 1) and
         // so on. We use the tile coordinates because we want to write different
         // values per tile.
@@ -69,9 +69,8 @@ int do_sram_read_write(int32_t *dest) {
         return err;
     }
 
-
-    // EVA read the four different return values
-    for (int32_t i = 0; i < 4; i++) {
+    // EVA read the four different return values (by tile coordinates)
+    for (int32_t i = 0; i < TILES; i++) {
         hb_mc_coordinate_t tile_coordinate = device.mesh->tiles[i].coord;
         err = hb_mc_manycore_eva_read(device.mc, &default_map, &tile_coordinate,
             &global_return_eva, &(dest[i]), sizeof(int32_t[TILES])); 
