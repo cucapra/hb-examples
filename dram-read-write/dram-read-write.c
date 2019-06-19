@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+// Note: these attributes specify that this is shared DRAM memory
 volatile int32_t global_value __attribute__((section(".dram")));
 volatile int32_t global_return[4] __attribute__((section(".dram")));
 
