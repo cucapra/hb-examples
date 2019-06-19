@@ -1,5 +1,5 @@
-HOST_SRCS := host.c
-DEVICE_SRCS := communication.c
+HOST_SRCS := bsg-host-communication.c host.c
+DEVICE_SRCS := bsg-device-communication.c communication.c
 
 HOST_TARGET := host
 DEVICE_TARGET := communication.riscv
