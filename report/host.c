@@ -35,7 +35,7 @@ int do_report(int32_t *outvals, size_t size) {
 
     // Collect the result by copying output data back over from the device.
     err = hb_mc_device_memcpy(&device, outvals, (void*)((intptr_t)out_addr),
-        size, hb_mc_memcpy_to_host);
+        size, HB_MC_MEMCPY_TO_HOST);
     if (err) return err;
 
     // Clean up.

@@ -34,9 +34,9 @@ int do_add(int32_t src1, int32_t src2, int32_t *dest) {
     // TK Why does the `eva_t` need to be converted to a `void*` here?
     // Shouldn't this function take an `eva_t` as an argument?
     err  = hb_mc_device_memcpy(&device, (void*)((intptr_t)src1_addr),
-        &src1, sizeof(int32_t), hb_mc_memcpy_to_device);
+        &src1, sizeof(int32_t), HB_MC_MEMCPY_TO_DEVICE);
     err |= hb_mc_device_memcpy(&device, (void*)((intptr_t)src2_addr),
-        &src2, sizeof(int32_t), hb_mc_memcpy_to_device);
+        &src2, sizeof(int32_t), HB_MC_MEMCPY_TO_DEVICE);
     if (err) {
         fprintf(stderr, "hb_mc_device_memcpy to device failed\n");
         return err;
@@ -61,7 +61,7 @@ int do_add(int32_t src1, int32_t src2, int32_t *dest) {
 
     // Collect the result by copying output data back over from the device.
     err = hb_mc_device_memcpy(&device, dest, (void*)((intptr_t)dest_addr),
-        sizeof(int32_t), hb_mc_memcpy_to_host);
+        sizeof(int32_t), HB_MC_MEMCPY_TO_HOST);
     if (err) {
         fprintf(stderr, "hb_mc_device_memcpy to host failed\n");
         return err;
