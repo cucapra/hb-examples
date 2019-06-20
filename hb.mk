@@ -13,7 +13,8 @@ DEVICE_TARGET ?= device.riscv
 all: $(DEVICE_TARGET) $(HOST_TARGET)
 
 clean:
-	rm -rf $(HOST_OBJS) $(DEVICE_OBJS_ALL) $(HOST_TARGET) $(DEVICE_TARGET)
+	rm -rf $(HOST_OBJS) $(DEVICE_OBJS_ALL) $(HOST_TARGET) $(DEVICE_TARGET) \
+		$(CRT_LIB)
 
 
 # Build host code with the "normal" compiler.
@@ -44,9 +45,10 @@ include $(BSG_MANYCORE_DIR)/software/mk/Makefile.builddefs
 
 DEVICE_OBJS := $(DEVICE_SRCS:.c=.o)
 DEVICE_OBJS_ALL := $(DEVICE_OBJS) $(BSG_MANYCORE_LIB_OBJS)
+CRT_LIB := crt.o
 
-$(DEVICE_TARGET): $(DEVICE_OBJS_ALL)
-	$(RISCV_LINK) $(RISCV_LINK_OPTS) $^ -o $@
+$(DEVICE_TARGET): $(DEVICE_OBJS_ALL) $(CRT_LIB)
+	$(RISCV_LINK) $(RISCV_LINK_OPTS) -L. $(DEVICE_OBJS_ALL) -o $@
 
 $(DEVICE_OBJS_ALL): %.o: %.c
 	$(RISCV_GCC) $(RISCV_GCC_OPTS) $(OPT_LEVEL) $(spmd_defs) -c $< -o $@
