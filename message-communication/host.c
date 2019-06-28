@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "bsg-host-communication.h"
+#include "../shared/bsg-host-communication.h"
 
 int do_communication(int32_t *dest) {
     int err;

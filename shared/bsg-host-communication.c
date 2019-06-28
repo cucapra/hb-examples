@@ -8,7 +8,7 @@ int _load_symbol_to_eva(hb_mc_device_t *device, const char *symbol, hb_mc_eva_t 
         symbol, eva);     
 }
 
-void send_argument(void *value, int size, int to_core, int id, void *context) {
+void send_argument(void *value, int32_t size, int32_t to_core, int32_t id, void *context) {
     int err;
 
     // Context is the device
@@ -70,7 +70,7 @@ void send_argument(void *value, int size, int to_core, int id, void *context) {
         &start_eva, &new_start, int_size);  
 }
 
-void receive_return(void *value, int size, void *context) {
+void receive_return(void *value, int32_t size, void *context) {
     int err;
 
     // Context is the device

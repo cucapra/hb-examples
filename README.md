@@ -36,7 +36,7 @@ The examples are arranged in order of increasing complexity:
 - `sram-read-write`: Demonstrates reading and writing from device tile-local SRAM using the lower-level API and symbol name lookups. We write a different value to each tile's statically allocated global variable, and read a different value from a return variable.
 - `inter-tile-communication`: Shows simple inter-tile communication. Each tile passes a single value by writing into the next tile's memory. Demonstrates basic synchronization with `bsg_wait_while` and `bsg_remote_store`. 
 - `message-communication`: Shows inter-tile communication using a linear buffer per tile. Each tile receives a single argument to their buffer from the host. The first 3 tiles then forward messages to the final tile by writing into its memory. The final tile writes the return (the sum of all values) back to DRAM. Uses `send`/`receive` calls written on top of the `bsg_remote_load` and `bsg_remote_store` primitives.
-
+- `fib`: NOTE: WORK IN PROGRESS; RESULTS INCORRECT. (Will) Calculate a fibonacci number from automatically-partitioned LLVM IR. 
 
 There is also an old example, `v0.4.2-vvadd`, which only works on an earlier version. It demonstrates a much different style of host/device communication that does not use the higher-level, "CUDA-style" API.
 

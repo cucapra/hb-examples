@@ -31,6 +31,9 @@ volatile int32_t comms_size[NUM_COMMS];
 // Treat the communication buffer as a linear buffer for now
 volatile int32_t comms_buffer_start = 0;
 
+// Hacky write lock for now!
+volatile int32_t write_lock = 0;
+
 // Return value(s). Note this attribute specifies that this is shared DRAM memory
 volatile char global_return[COMMS_BUFFER_SIZE]  __attribute__((section(".dram")));
 
@@ -43,10 +46,19 @@ void copy(char *dest, char *src, unsigned len) {
     }
 }
 
-void send(void *value, int size, int to_core, int id, void *context) {
+void send(void *value, int32_t size, int32_t to_core, int32_t id, void *context) {
     // Construct coordinates
     int to_x = bsg_id_to_x(to_core);
     int to_y = bsg_id_to_y(to_core);
+
+    // Make sure no one else is writing to the buffer right now
+    int write_lock_taken = 1;
+    while (write_lock_taken) {
+        bsg_remote_load(to_x, to_y, &write_lock, write_lock_taken);
+    }
+
+    // Mark that we are writing 
+    bsg_remote_store(to_x, to_y, &write_lock, 1);
 
     // Grab the start of the communication buffer for the recepient
     int start_idx;
@@ -66,13 +78,16 @@ void send(void *value, int size, int to_core, int id, void *context) {
 
     // Finally, write out to the recepient that this value is ready
     bsg_remote_store(to_x, to_y, &comms_ready[id], 1);
+
+    // Mark that we are done writing 
+    bsg_remote_store(to_x, to_y, &write_lock, 0);
 }
 
-void send_return(void *value, int size, void *context) {
+void send_return(void *value, int32_t size, void *context) {
     copy(global_return, value, size);
 }
 
-void *_receive_shared(int size, int id, void *context) {
+void *_receive_shared(int32_t size, int32_t id, void *context) {
     // Wait patiently until the value is ready
     bsg_wait_while(!comms_ready[id]);
 
@@ -89,7 +104,7 @@ void *_receive_shared(int size, int id, void *context) {
     return &comms_buffer[start_idx];
 }
 
-void *receive(int size, int from_core, int id, void *context) {
+void *receive(int32_t size, int32_t from_core, int32_t id, void *context) {
     void *value = _receive_shared(size, id, context);
 
     // Regular reads should be destructive: the value is no longer ready
@@ -99,7 +114,7 @@ void *receive(int size, int from_core, int id, void *context) {
     return value;
 }
 
-void *receive_argument(int size, int id, void *context) {
+void *receive_argument(int32_t size, int32_t id, void *context) {
     // Argument reads should not be destructive
     return _receive_shared(size, id, context);;   
 }
