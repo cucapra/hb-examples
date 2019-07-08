@@ -14,3 +14,9 @@ extern void *receive_argument(int32_t size, int32_t id, void *context);
 
 // Send a return value back to the host. Context is implementation-specific.
 extern void send_return(void *value, int32_t size, void *context);
+
+// Send a token for synchronization. Context is implementation-specific.
+extern void send_token(int to_core, int id, void *context);
+
+// Receive a token for synchronization. Context is implementation-specific.
+extern void receive_token(int id, void *context);
