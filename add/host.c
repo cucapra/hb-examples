@@ -10,8 +10,7 @@ int do_add(int32_t src1, int32_t src2, int32_t *dest) {
 
     // Initialize the device.
     hb_mc_device_t device;
-    hb_mc_dimension_t mesh_dim = {.x = 2, .y = 2};
-    err = hb_mc_device_init(&device, "example", 0,  mesh_dim);
+    err = hb_mc_device_init(&device, "example", 0);
     if (err) return err;
 
     // Load the `add.riscv` program.
@@ -34,9 +33,9 @@ int do_add(int32_t src1, int32_t src2, int32_t *dest) {
     // TK Why does the `eva_t` need to be converted to a `void*` here?
     // Shouldn't this function take an `eva_t` as an argument?
     err  = hb_mc_device_memcpy(&device, (void*)((intptr_t)src1_addr),
-        &src1, sizeof(int32_t), hb_mc_memcpy_to_device);
+        &src1, sizeof(int32_t), HB_MC_MEMCPY_TO_DEVICE);
     err |= hb_mc_device_memcpy(&device, (void*)((intptr_t)src2_addr),
-        &src2, sizeof(int32_t), hb_mc_memcpy_to_device);
+        &src2, sizeof(int32_t), HB_MC_MEMCPY_TO_DEVICE);
     if (err) {
         fprintf(stderr, "hb_mc_device_memcpy to device failed\n");
         return err;
@@ -51,8 +50,8 @@ int do_add(int32_t src1, int32_t src2, int32_t *dest) {
     // arguments to `hb_mc_grid_init` specify the arguments to the `add`
     // function in the device code.
     hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
-    hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
-    err = hb_mc_grid_init(&device, grid_dim, tg_dim, "add", 3, args);
+    hb_mc_dimension_t tg_dim = {.x = bsg_tiles_X, .y = bsg_tiles_Y};
+    err = hb_mc_application_init(&device, grid_dim, tg_dim, "add", 3, args);
     if (err) return err;
 
     // Run the function.
@@ -61,7 +60,7 @@ int do_add(int32_t src1, int32_t src2, int32_t *dest) {
 
     // Collect the result by copying output data back over from the device.
     err = hb_mc_device_memcpy(&device, dest, (void*)((intptr_t)dest_addr),
-        sizeof(int32_t), hb_mc_memcpy_to_host);
+        sizeof(int32_t), HB_MC_MEMCPY_TO_HOST);
     if (err) {
         fprintf(stderr, "hb_mc_device_memcpy to host failed\n");
         return err;

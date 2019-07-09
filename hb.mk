@@ -15,11 +15,19 @@ all: $(DEVICE_TARGET) $(HOST_TARGET)
 clean:
 	rm -rf $(HOST_OBJS) $(DEVICE_OBJS_ALL) $(HOST_TARGET) $(DEVICE_TARGET)
 
+# Declare dimensions of the hammerblade
+
+bsg_tiles_X := 4
+bsg_tiles_Y := 4
+
+# doesn't seem to do anything but needs to be defined
+#
+bsg_group_size := 1
 
 # Build host code with the "normal" compiler.
 
 HOST_OBJS := $(HOST_SRCS:.c=.o)
-HOST_CFLAGS := -std=c11 -lbsg_manycore_runtime
+HOST_CFLAGS := -std=c11 -lbsg_manycore_runtime -Dbsg_tiles_X=$(bsg_tiles_X) -Dbsg_tiles_Y=$(bsg_tiles_Y)
 HOST_CC := cc
 
 $(HOST_TARGET): $(HOST_OBJS)
@@ -31,10 +39,9 @@ $(HOST_OBJS): %.o: %.c
 
 # Include bsg_manycore Make infrastructure.
 
-bsg_tiles_X := 2
-bsg_tiles_Y := 2
-
 BSG_MANYCORE_DIR := $(wildcard /home/centos/bsg_bladerunner/bsg_manycore_*)
+BSG_F1_DIR := $(wildcard /home/centos/bsg_bladerunner/bsg_f1_*)
+include $(BSG_F1_DIR)/cl_manycore/Makefile.machine.include
 include $(BSG_MANYCORE_DIR)/software/mk/Makefile.dimensions
 include $(BSG_MANYCORE_DIR)/software/mk/Makefile.paths
 include $(BSG_MANYCORE_DIR)/software/mk/Makefile.builddefs
@@ -46,7 +53,7 @@ DEVICE_OBJS := $(DEVICE_SRCS:.c=.o)
 DEVICE_OBJS_ALL := $(DEVICE_OBJS) $(BSG_MANYCORE_LIB_OBJS)
 
 $(DEVICE_TARGET): $(DEVICE_OBJS_ALL)
-	$(RISCV_LINK) $(RISCV_LINK_OPTS) $^ -o $@
+	$(RISCV_LINK) $^ -o $@ $(RISCV_LINK_OPTS) 
 
 $(DEVICE_OBJS_ALL): %.o: %.c
 	$(RISCV_GCC) $(RISCV_GCC_OPTS) $(OPT_LEVEL) $(spmd_defs) -c $< -o $@
