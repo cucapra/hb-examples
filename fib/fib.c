@@ -15,8 +15,6 @@ INIT_TILE_GROUP_BARRIER(r_barrier, c_barrier, 0, bsg_tiles_X - 1, 0,
 
 void fib_0(void *c);
 void fib_1(void *c);
-void fib_2(void *c);
-void fib_3(void *c);
 
 int fib() {
     // API call to set the global tile ID values
@@ -31,14 +29,6 @@ int fib() {
 
         case 1: 
             fib_1(0);
-            break;
-
-        case 2:
-            fib_2(0);
-            break;
-
-        default:
-            fib_3(0);
             break;
     }
 

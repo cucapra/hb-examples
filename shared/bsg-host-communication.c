@@ -3,6 +3,10 @@
 #include <bsg_manycore_cuda.h>
 #include <bsg_manycore_loader.h>
 
+int align_size(int size) {
+    return (size + 3) / 4 * 4;
+}
+
 int _load_symbol_to_eva(hb_mc_device_t *device, const char *symbol, hb_mc_eva_t *eva) {
     return hb_mc_loader_symbol_to_eva(device->program->bin, device->program->bin_size, 
         symbol, eva);     
@@ -10,6 +14,9 @@ int _load_symbol_to_eva(hb_mc_device_t *device, const char *symbol, hb_mc_eva_t 
 
 void send_argument(void *value, int32_t size, int32_t to_core, int32_t id, void *context) {
     int err;
+
+    // HB memory operations require word-aligned pointers, *not* byte-aligned!
+    size = align_size(size);
 
     // Context is the device
     hb_mc_device_t *device = (hb_mc_device_t *)context;
@@ -72,6 +79,9 @@ void send_argument(void *value, int32_t size, int32_t to_core, int32_t id, void 
 
 void receive_return(void *value, int32_t size, void *context) {
     int err;
+
+    // HB memory operations require word-aligned pointers, *not* byte-aligned!
+    size = align_size(size);
 
     // Context is the device
     hb_mc_device_t *device = (hb_mc_device_t *)context;

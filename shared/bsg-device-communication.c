@@ -74,6 +74,9 @@ void copy(char *dest, char *src, unsigned len) {
 
 // When sending something twice, don't add to the end!!!
 void send(void *value, int32_t size, int32_t to_core, int32_t id, void *context) {
+    // HB memory operations require word-aligned pointers, *not* byte-aligned!
+    size = (size + 3) / 4 * 4;
+
     // Construct coordinates
     int to_x = bsg_id_to_x(to_core);
     int to_y = bsg_id_to_y(to_core);
