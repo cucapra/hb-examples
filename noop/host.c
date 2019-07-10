@@ -14,8 +14,7 @@ int main(int argc, const char **argv) {
     // TK I don't know what a "mesh" actually is.
     // TK I don't know if the "name" parameter here matters.
     hb_mc_device_t device;
-    hb_mc_dimension_t mesh_dim = {.x = 2, .y = 2};
-    err = hb_mc_device_init(&device, "example", 0,  mesh_dim);
+    err = hb_mc_device_init(&device, "example", 0);
     if (err) {
         fprintf(stderr, "error in hb_mc_device_init\n");
         return err;
@@ -43,7 +42,7 @@ int main(int argc, const char **argv) {
     // TK I don't entirely know what a "tile group" or a "grid" actually is.
     hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
     hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
-    err = hb_mc_grid_init(&device, grid_dim, tg_dim, "noop", 0, NULL);
+    err = hb_mc_application_init(&device, grid_dim, tg_dim, "noop", 0, NULL);
     if (err) {
         fprintf(stderr, "error in hb_mc_grid_init\n");
         return err;
