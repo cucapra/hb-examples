@@ -67,5 +67,4 @@ $(DEVICE_OBJS_ALL): %.o: %.c
 
 .PHONY: run
 run: all
-	sudo fpga-load-local-image -S 0 -F -I $(AGFI)
 	sudo ./$(HOST_TARGET)
