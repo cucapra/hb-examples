@@ -1,20 +1,19 @@
 #define _BSD_SOURCE
 #define _XOPEN_SOURCE 500
 
-#define TILES 4
-
 #include <bsg_manycore_cuda.h>
 #include <bsg_manycore_loader.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+const int TILE_COUNT = bsg_tiles_X * bsg_tiles_Y;  // Our group of tiles.
 
 int do_dram_read_write(int32_t src, int32_t *dest) {
     int err;
 
     // Initialize the device.
     hb_mc_device_t device;
-    hb_mc_dimension_t mesh_dim = {.x = 2, .y = 2};
-    err = hb_mc_device_init(&device, "example", 0,  mesh_dim);
+    err = hb_mc_device_init(&device, "example", 0);
     if (err) return err;
 
     // Load the `dram-read-write.riscv` program to be run on device.
@@ -44,11 +43,11 @@ int do_dram_read_write(int32_t src, int32_t *dest) {
     }  
 
     // Set up the tile group, dimensions, and function to call. The last two
-    // arguments to `hb_mc_grid_init` specify the (empty) arguments to 
+    // arguments to `hb_mc_application_init` specify the (empty) arguments to 
     // dram_read_write
     hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
-    hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
-    err = hb_mc_grid_init(&device, grid_dim, tg_dim, "dram_read_write", 0, NULL);
+    hb_mc_dimension_t tg_dim = {.x = bsg_tiles_X, .y = bsg_tiles_Y};
+    err = hb_mc_application_init(&device, grid_dim, tg_dim, "dram_read_write", 0, NULL);
     if (err) return err;
 
     // Run the function.
@@ -66,7 +65,7 @@ int do_dram_read_write(int32_t src, int32_t *dest) {
 
     // EVA read the single return value
     err = hb_mc_manycore_eva_read(device.mc, &default_map, &host_coordinate,
-        &global_return_eva, dest, sizeof(int32_t[TILES])); 
+        &global_return_eva, dest, sizeof(int32_t[TILE_COUNT])); 
     if (err) {
         fprintf(stderr, "hb_mc_device_memcpy to host failed\n");
         return err;
@@ -87,15 +86,15 @@ int main(int argc, const char **argv) {
     src = atoi(argv[1]);
 
     // Read and write from DRAM!
-    int32_t dest[TILES];
+    int32_t dest[TILE_COUNT];
     int err = do_dram_read_write(src, dest);
     if (err) {
         return err;
     }
 
     // Print the answer!
-    printf("Value written value: %i\n", src);
-    for (int i = 0; i < TILES; ++i){
+    printf("Value written to device DRAM: %i\n", src);
+    for (int i = 0; i < TILE_COUNT; ++i){
         printf("Value read from tile %i: %i\n", i, dest[i]);
     }
 

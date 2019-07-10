@@ -44,7 +44,7 @@ int main(int argc, const char **argv) {
     hb_mc_dimension_t tg_dim = {.x = bsg_tiles_X, .y = bsg_tiles_Y};
     err = hb_mc_application_init(&device, grid_dim, tg_dim, "noop", 0, NULL);
     if (err) {
-        fprintf(stderr, "error in hb_mc_grid_init\n");
+        fprintf(stderr, "error in hb_mc_application_init\n");
         return err;
     }
 

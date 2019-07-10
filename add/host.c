@@ -47,7 +47,7 @@ int do_add(int32_t src1, int32_t src2, int32_t *dest) {
     uint32_t args[] = {src1_addr, src2_addr, dest_addr};
 
     // Set up the tile group, dimensions, and function to call. The last two
-    // arguments to `hb_mc_grid_init` specify the arguments to the `add`
+    // arguments to `hb_mc_application_init` specify the arguments to the `add`
     // function in the device code.
     hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
     hb_mc_dimension_t tg_dim = {.x = bsg_tiles_X, .y = bsg_tiles_Y};

@@ -1,20 +1,19 @@
 #define _BSD_SOURCE
 #define _XOPEN_SOURCE 500
 
-#define TILES 4
-
 #include <bsg_manycore_cuda.h>
 #include <bsg_manycore_loader.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+const int TILE_COUNT = bsg_tiles_X * bsg_tiles_Y;  // Our group of tiles.
 
 int do_sram_read_write(int32_t *dest) {
     int err;
 
     // Initialize the device.
     hb_mc_device_t device;
-    hb_mc_dimension_t mesh_dim = {.x = 2, .y = 2};
-    err = hb_mc_device_init(&device, "example", 0,  mesh_dim);
+    err = hb_mc_device_init(&device, "example", 0);
     if (err) return err;
 
     // Load the `sram-read-write.riscv` program to be run on device.
@@ -33,14 +32,14 @@ int do_sram_read_write(int32_t *dest) {
     }
 
     // Set up the tile group, dimensions, and function to call. The last two
-    // arguments to `hb_mc_grid_init` specify the (empty) arguments to 
+    // arguments to `hb_mc_application_init` specify the (empty) arguments to 
     // sram_read_write
     hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
-    hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
-    err = hb_mc_grid_init(&device, grid_dim, tg_dim, "local_sram_read_write", 0, NULL);
+    hb_mc_dimension_t tg_dim = {.x = bsg_tiles_X, .y = bsg_tiles_Y};
+    err = hb_mc_application_init(&device, grid_dim, tg_dim, "local_sram_read_write", 0, NULL);
     if (err) return err;
 
-    for (int32_t i = 0; i < TILES; i++) {
+    for (int32_t i = 0; i < TILE_COUNT; i++) {
         // Get the tile coordinate for each tile. Note that because the first row 
         // is reserved for I/O, tile ID 0 corresponds to coordinate (0, 1) and
         // so on. We use the tile coordinates because we want to write different
@@ -69,11 +68,11 @@ int do_sram_read_write(int32_t *dest) {
         return err;
     }
 
-    // EVA read the four different return values (by tile coordinates)
-    for (int32_t i = 0; i < TILES; i++) {
+    // EVA read the different return values per tile (by tile coordinates)
+    for (int32_t i = 0; i < TILE_COUNT; i++) {
         hb_mc_coordinate_t tile_coordinate = device.mesh->tiles[i].coord;
         err = hb_mc_manycore_eva_read(device.mc, &default_map, &tile_coordinate,
-            &global_return_eva, &(dest[i]), sizeof(int32_t[TILES])); 
+            &global_return_eva, &(dest[i]), sizeof(int32_t)); 
         if (err) {
             fprintf(stderr, "hb_mc_device_memcpy to host failed\n");
             return err;
@@ -87,14 +86,14 @@ int do_sram_read_write(int32_t *dest) {
 
 int main(int argc, const char **argv) {
     // Read and write from SRAM!
-    int32_t dest[TILES];
+    int32_t dest[TILE_COUNT];
     int err = do_sram_read_write(dest);
     if (err) {
         return err;
     }
 
     // Print the value per tile (should be twice the tile ID)!
-    for (int i = 0; i < TILES; ++i){
+    for (int i = 0; i < TILE_COUNT; ++i){
         printf("Value read from tile %i: %i\n", i, dest[i]);
     }
 
