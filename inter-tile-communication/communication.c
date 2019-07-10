@@ -30,6 +30,8 @@ int communicate(int32_t *src, int32_t *dest) {
     // Switch on tile ID of the current core
     switch(tile_id) {
         case 0:
+            bsg_printf("Core 0 received the starting value (%d)\n", *src);
+
             // The core 0 reads the argument from the host and adds 1
             value = *src + 1;
 
@@ -44,36 +46,30 @@ int communicate(int32_t *src, int32_t *dest) {
             bsg_remote_store(x, y, &ready, 1);
             break;
 
-        case 1:
-            // Wait on the ready flag
+        // The "last" core 
+        case (bsg_tiles_X * bsg_tiles_Y - 1):
+            // Simply wait and sets the final value dest to be read by the host
             bsg_wait_while(!ready);
 
-            // After waiting, value should be received from core 0. 
-            value += 2;
-
-            // Send the new value to core 2
-            x = bsg_id_to_x(2);
-            y = bsg_id_to_y(2);
-            bsg_remote_store(x, y, &value, value);
-            bsg_remote_store(x, y, &ready, 1);
-            break;
-
-        case 2:
-            // Again, wait on ready, modify the value, pass along to core 3
-            bsg_wait_while(!ready);
-
-            value += 3;
-
-            x = bsg_id_to_x(3);
-            y = bsg_id_to_y(3);
-            bsg_remote_store(x, y, &value, value);
-            bsg_remote_store(x, y, &ready, 1);
+            bsg_printf("Core %d, final value (%d)\n", tile_id, value);
+            *dest = value;
             break;
 
         default:
-            // Core 3 simply waits and sets the final value dest to be read by the host
+            // Wait on the local ready flag
             bsg_wait_while(!ready);
-            *dest = value;
+
+            bsg_printf("Core %d, value (%d)\n", tile_id, value);
+
+            // After waiting, value should be received from the previous core.
+            // Increment it by 1
+            value += 1;
+
+            // Send the new value to the next core
+            x = bsg_id_to_x(tile_id + 1);
+            y = bsg_id_to_y(tile_id + 1);
+            bsg_remote_store(x, y, &value, value);
+            bsg_remote_store(x, y, &ready, 1);
             break;
     }
 
