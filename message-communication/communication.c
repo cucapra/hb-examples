@@ -52,7 +52,7 @@ int communicate(int32_t *src, int32_t *dest) {
             send(&value, int_size, 3, 6, NULL);
             break;
 
-        default:
+        case 3:
             // Receive a value from the host
             value = *(int32_t *)receive_argument(int_size, tile_id, NULL);
 
@@ -64,6 +64,8 @@ int communicate(int32_t *src, int32_t *dest) {
             // Should be 0 + 1 + 2 + 3 = 6
             value = value + valueFrom0 + valueFrom1 + valueFrom2;
             send_return(&value, int_size, NULL);
+            break;
+        default:
             break;
     }
 

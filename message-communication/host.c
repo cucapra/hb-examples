@@ -14,8 +14,7 @@ int do_communication(int32_t *dest) {
 
     // Initialize the device.
     hb_mc_device_t device;
-    hb_mc_dimension_t mesh_dim = {.x = 2, .y = 2};
-    err = hb_mc_device_init(&device, "example", 0,  mesh_dim);
+    err = hb_mc_device_init(&device, "example", 0);
     if (err) return err;
 
     // Load the `communication.riscv` program to be run on device.
@@ -23,11 +22,11 @@ int do_communication(int32_t *dest) {
     if (err) return err;
 
     // Set up the tile group, dimensions, and function to call. The last two
-    // arguments to `hb_mc_grid_init` specify the arguments to the `communicate`
+    // arguments to `hb_mc_application_init` specify the arguments to the `communicate`
     // function in the device code.
     hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
-    hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
-    err = hb_mc_grid_init(&device, grid_dim, tg_dim, "communicate", 0, NULL);
+    hb_mc_dimension_t tg_dim = {.x = bsg_tiles_X, .y = bsg_tiles_Y};
+    err = hb_mc_application_init(&device, grid_dim, tg_dim, "communicate", 0, NULL);
     if (err) return err;
 
     int32_t int_size = sizeof(int32_t);
@@ -49,9 +48,6 @@ int do_communication(int32_t *dest) {
 }
 
 int main(int argc, const char **argv) {
-    // We take an argument from the command line for the starting number
-
-    // Pass the number along core-to-core on device, adding to it each time
     int32_t dest;
     int err = do_communication(&dest);
     if (err) {
