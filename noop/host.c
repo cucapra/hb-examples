@@ -41,7 +41,7 @@ int main(int argc, const char **argv) {
     // TK Check that 2x2 is indeed the largest usable size on F1.
     // TK I don't entirely know what a "tile group" or a "grid" actually is.
     hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
-    hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
+    hb_mc_dimension_t tg_dim = {.x = bsg_tiles_X, .y = bsg_tiles_Y};
     err = hb_mc_application_init(&device, grid_dim, tg_dim, "noop", 0, NULL);
     if (err) {
         fprintf(stderr, "error in hb_mc_grid_init\n");

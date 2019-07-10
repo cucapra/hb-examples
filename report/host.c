@@ -10,8 +10,7 @@ int do_report(int32_t *outvals, size_t size) {
 
     // Initialize the device.
     hb_mc_device_t device;
-    hb_mc_dimension_t mesh_dim = {.x = 2, .y = 2};
-    err = hb_mc_device_init(&device, "example", 0,  mesh_dim);
+    err = hb_mc_device_init(&device, "example", 0);
     if (err) return err;
 
     // Load the `report.riscv` program.
@@ -25,8 +24,8 @@ int do_report(int32_t *outvals, size_t size) {
 
     // Set up the grid, group, and function. There's only one argument.
     hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
-    hb_mc_dimension_t tg_dim = {.x = 2, .y = 2};
-    err = hb_mc_grid_init(&device, grid_dim, tg_dim, "report", 1, &out_addr);
+    hb_mc_dimension_t tg_dim = {.x = bsg_tiles_X, .y = bsg_tiles_Y};
+    err = hb_mc_application_init(&device, grid_dim, tg_dim, "report", 1, &out_addr);
     if (err) return err;
 
     // Run the function.
@@ -35,7 +34,7 @@ int do_report(int32_t *outvals, size_t size) {
 
     // Collect the result by copying output data back over from the device.
     err = hb_mc_device_memcpy(&device, outvals, (void*)((intptr_t)out_addr),
-        size, hb_mc_memcpy_to_host);
+        size, HB_MC_MEMCPY_TO_HOST);
     if (err) return err;
 
     // Clean up.
@@ -43,7 +42,7 @@ int do_report(int32_t *outvals, size_t size) {
     if (err) return err;
 }
 
-const int TILE_COUNT = 4;  // We're using a 2x2 group of tiles.
+const int TILE_COUNT = bsg_tiles_X * bsg_tiles_Y;  // Our group of tiles.
 const int VALUE_COUNT = 9;  // Each tile reports 9 things.
 const char *VALUE_NAMES[] = {
     "__bsg_x",
