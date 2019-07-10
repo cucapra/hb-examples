@@ -18,8 +18,7 @@ Then, in another terminal, type `chazz ssh` and then:
     $ make -C noop run
 
 Each example comes with a `run` target in its Makefile, so just type `make run` to build and execute the example.
-The current version of the HammerBlade image (v1.0.0) has a bug where, after running a program on the device, it locks up and you can't run another program.
-That's while you'll see an `fpga-load-local-image` command in each `run` recipe: this resets the FPGA so another program can execute.
+The current version of the HammerBlade image targeted by the `master` branch is `v3.0.6`.
 
 [chazz]: https://github.com/cucapra/chazz
 
