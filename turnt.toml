@@ -1,1 +1,5 @@
-command = "make -s -C {filename} run"
+# This command silences Make's bookkeeping output. Then, `tail` skips the
+# first two lines, which come from `$(warning ...)` lines in the BSG Makefile
+# stuff that just prints out dimension information. This leaves us with just
+# the output of the command.
+command = "make -s -C {filename} run | tail -n +3"
