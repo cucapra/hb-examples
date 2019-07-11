@@ -22,4 +22,4 @@ include ../hb.mk
 
 .PHONY: run
 run: all
-	sudo ./$(HOST_TARGET)
+	sudo ./$(HOST_TARGET) 10

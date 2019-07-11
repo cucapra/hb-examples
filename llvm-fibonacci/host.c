@@ -13,7 +13,7 @@
 const size_t TILES_X = 4;
 const size_t TILES_Y = 4;
 
-int do_fib(int32_t *dest) {
+int do_fib(int n, int32_t *dest) {
     int err;
 
     // Initialize the device.
@@ -30,6 +30,8 @@ int do_fib(int32_t *dest) {
     err = hb_mc_application_init(&device, grid_dim, tg_dim, "fib", 0, NULL);
     if (err) return err;
 
+    send_argument(&n, sizeof(n), 0, 0, &device);
+
     // Run the function.
     err = hb_mc_device_tile_groups_execute(&device);
     if (err) return err;
@@ -43,8 +45,16 @@ int do_fib(int32_t *dest) {
 }
 
 int main(int argc, const char **argv) {
+    // We take an argument from the command line.
+    int32_t n;
+    if (argc < 2) {
+        fprintf(stderr, "usage: %s num\n", argv[0]);
+        return 1;
+    }
+    n = atoi(argv[1]);
+
     int32_t dest;
-    int err = do_fib(&dest);
+    int err = do_fib(n, &dest);
     if (err) {
         return err;
     }

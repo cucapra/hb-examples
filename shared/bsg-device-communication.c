@@ -81,11 +81,14 @@ void send(void *value, int32_t size, int32_t to_core, int32_t id, void *context)
     int to_x = bsg_id_to_x(to_core);
     int to_y = bsg_id_to_y(to_core);
 
+    // Make sure we aren't overwriting the old value 
+    int remote_ready = 1;
+    while (remote_ready) {
+        bsg_remote_load(to_x, to_y, &comms_ready[id], remote_ready);
+    }
+
     // Make sure no one else is writing to the buffer right now
     _aquire_remote_write_lock(to_x, to_y);
-
-    // Make sure we aren't overwriting the old value 
-    bsg_wait_while(comms_ready[id]);
 
     // Check if we already have taken a spot for this ID
     int existing_size;
