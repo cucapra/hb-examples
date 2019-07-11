@@ -1,0 +1,160 @@
+Tile 0:
+  __bsg_x = 0
+  __bsg_y = 0
+  __bsg_id = 0
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
+Tile 1:
+  __bsg_x = 1
+  __bsg_y = 0
+  __bsg_id = 1
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
+Tile 2:
+  __bsg_x = 2
+  __bsg_y = 0
+  __bsg_id = 2
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
+Tile 3:
+  __bsg_x = 3
+  __bsg_y = 0
+  __bsg_id = 3
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
+Tile 4:
+  __bsg_x = 0
+  __bsg_y = 1
+  __bsg_id = 4
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
+Tile 5:
+  __bsg_x = 1
+  __bsg_y = 1
+  __bsg_id = 5
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
+Tile 6:
+  __bsg_x = 2
+  __bsg_y = 1
+  __bsg_id = 6
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
+Tile 7:
+  __bsg_x = 3
+  __bsg_y = 1
+  __bsg_id = 7
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
+Tile 8:
+  __bsg_x = 0
+  __bsg_y = 2
+  __bsg_id = 8
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
+Tile 9:
+  __bsg_x = 1
+  __bsg_y = 2
+  __bsg_id = 9
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
+Tile 10:
+  __bsg_x = 2
+  __bsg_y = 2
+  __bsg_id = 10
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
+Tile 11:
+  __bsg_x = 3
+  __bsg_y = 2
+  __bsg_id = 11
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
+Tile 12:
+  __bsg_x = 0
+  __bsg_y = 3
+  __bsg_id = 12
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
+Tile 13:
+  __bsg_x = 1
+  __bsg_y = 3
+  __bsg_id = 13
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
+Tile 14:
+  __bsg_x = 2
+  __bsg_y = 3
+  __bsg_id = 14
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
+Tile 15:
+  __bsg_x = 3
+  __bsg_y = 3
+  __bsg_id = 15
+  __bsg_grp_org_x = 0
+  __bsg_grp_org_y = 1
+  __bsg_grid_dim_x = 1
+  __bsg_grid_dim_y = 1
+  __bsg_tile_group_id_x = 0
+  __bsg_tile_group_id_y = 0
