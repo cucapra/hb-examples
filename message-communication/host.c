@@ -9,6 +9,9 @@
 
 #include "../shared/bsg-host-communication.h"
 
+const size_t TILES_X = 4;
+const size_t TILES_Y = 4;
+
 int do_communication(int32_t *dest) {
     int err;
 
@@ -25,7 +28,7 @@ int do_communication(int32_t *dest) {
     // arguments to `hb_mc_application_init` specify the arguments to the `communicate`
     // function in the device code.
     hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
-    hb_mc_dimension_t tg_dim = {.x = bsg_tiles_X, .y = bsg_tiles_Y};
+    hb_mc_dimension_t tg_dim = {.x = TILES_X, .y = TILES_Y};
     err = hb_mc_application_init(&device, grid_dim, tg_dim, "communicate", 0, NULL);
     if (err) return err;
 

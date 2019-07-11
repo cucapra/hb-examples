@@ -6,6 +6,10 @@
 #include <bsg_manycore_cuda.h>
 #include <stdio.h>
 
+// The dimensions of the tile group we'll use on the manycore.
+const size_t TILES_X = 4;
+const size_t TILES_Y = 4;
+
 int main(int argc, const char **argv) {
     int err;
 
@@ -28,13 +32,14 @@ int main(int argc, const char **argv) {
     // Set up the "tile groups" and "grid." We also specify the function
     // name and set the arguments (`argc` and `argv`) for the function we'll
     // eventually call.
-    // The dimensions of the tile group are set to 4x4 here, which matches
-    // some build-time parameters set in our Makefile.
-    // `grid_dim` seems to control the _number_ of 2x2 tile
-    // groups---it seems like this should _always_ be 1x1 (I'm not sure why
-    // you would want anything else).
+    // The dimensions of the tile group are set to `TILES_X`x`TILES_Y` here,
+    // which might need to match some build-time parameters in the device
+    // code, set in our Makefile.
+    // `grid_dim` seems to control the _number_ of tile groups of that
+    // size---it seems like this should _always_ be 1x1 (I'm not sure why you
+    // would want anything else).
     hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
-    hb_mc_dimension_t tg_dim = {.x = bsg_tiles_X, .y = bsg_tiles_Y};
+    hb_mc_dimension_t tg_dim = {.x = TILES_X, .y = TILES_Y};
     err = hb_mc_application_init(&device, grid_dim, tg_dim, "noop", 0, NULL);
     if (err) {
         fprintf(stderr, "error in hb_mc_application_init\n");

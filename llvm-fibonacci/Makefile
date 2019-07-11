@@ -6,8 +6,8 @@ DEVICE_TARGET := fib.riscv
 
 CLANG := 1
 
-# Build the LLVM IR 
-%.s: %.ll 
+# Build the LLVM IR
+%.s: %.ll
 	$(LLVM_CLANG) $(RISCV_GCC_OPTS) $(spmd_defs) -fno-addrsig $(INCS) $< -S -o $@
 
 %.o: %.s
