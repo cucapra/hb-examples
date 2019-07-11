@@ -5,6 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define TILES_X 4
+#define TILES_Y 4
+
 int do_report(int32_t *outvals, size_t size) {
     int err;
 
@@ -24,7 +27,7 @@ int do_report(int32_t *outvals, size_t size) {
 
     // Set up the grid, group, and function. There's only one argument.
     hb_mc_dimension_t grid_dim = {.x = 1, .y = 1};
-    hb_mc_dimension_t tg_dim = {.x = bsg_tiles_X, .y = bsg_tiles_Y};
+    hb_mc_dimension_t tg_dim = {.x = TILES_X, .y = TILES_X};
     err = hb_mc_application_init(&device, grid_dim, tg_dim, "report", 1, &out_addr);
     if (err) return err;
 
@@ -42,7 +45,7 @@ int do_report(int32_t *outvals, size_t size) {
     if (err) return err;
 }
 
-const int TILE_COUNT = bsg_tiles_X * bsg_tiles_Y;  // Our group of tiles.
+const int TILE_COUNT = TILES_X * TILES_X;  // Our group of tiles.
 const int VALUE_COUNT = 9;  // Each tile reports 9 things.
 const char *VALUE_NAMES[] = {
     "__bsg_x",

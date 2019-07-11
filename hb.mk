@@ -27,7 +27,7 @@ bsg_group_size := 1
 # Build host code with the "normal" compiler.
 
 HOST_OBJS := $(HOST_SRCS:.c=.o)
-HOST_CFLAGS := -std=c11 -lbsg_manycore_runtime -Dbsg_tiles_X=$(bsg_tiles_X) -Dbsg_tiles_Y=$(bsg_tiles_Y)
+HOST_CFLAGS := -std=c11 -lbsg_manycore_runtime
 HOST_CC := cc
 
 $(HOST_TARGET): $(HOST_OBJS)
@@ -53,7 +53,7 @@ DEVICE_OBJS := $(DEVICE_SRCS:.c=.o)
 DEVICE_OBJS_ALL := $(DEVICE_OBJS) $(BSG_MANYCORE_LIB_OBJS)
 
 $(DEVICE_TARGET): $(DEVICE_OBJS_ALL) $(DEVICE_NON_C_OBJS)
-	$(RISCV_LINK) $^ -o $@ $(RISCV_LINK_OPTS) 
+	$(RISCV_LINK) $^ -o $@ $(RISCV_LINK_OPTS)
 
 $(DEVICE_OBJS_ALL): %.o: %.c
 	$(RISCV_GCC) $(RISCV_GCC_OPTS) $(OPT_LEVEL) $(spmd_defs) -c $< -o $@
