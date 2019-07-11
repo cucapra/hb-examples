@@ -75,7 +75,7 @@ void copy(char *dest, char *src, unsigned len) {
 // When sending something twice, don't add to the end!!!
 void send(void *value, int32_t size, int32_t to_core, int32_t id, void *context) {
     // HB memory operations require word-aligned pointers, *not* byte-aligned!
-    size = (size + 3) / 4 * 4;
+    int aligned_size = (size + 3) / 4 * 4;
 
     // Construct coordinates
     int to_x = bsg_id_to_x(to_core);
@@ -99,11 +99,11 @@ void send(void *value, int32_t size, int32_t to_core, int32_t id, void *context)
         bsg_remote_load(to_x, to_y, &comms_buffer_start, start_idx);
 
         // Increment the recepient's buffer start by the size
-        bsg_remote_store(to_x, to_y, &comms_buffer_start, start_idx + size);
+        bsg_remote_store(to_x, to_y, &comms_buffer_start, start_idx + aligned_size);
 
         // Set the communication buffer metadata on the recepient for this ID
         bsg_remote_store(to_x, to_y, &comms_start_idx[id], start_idx);
-        bsg_remote_store(to_x, to_y, &comms_size[id], size);
+        bsg_remote_store(to_x, to_y, &comms_size[id], aligned_size);
     } else {
         bsg_remote_load(to_x, to_y, &comms_start_idx[id], start_idx);
     }
@@ -145,6 +145,7 @@ void *receive(int32_t size, int32_t from_core, int32_t id, void *context) {
     void *value = _receive_shared(size, id, context);
 
     _aquire_local_write_lock();
+
     // Regular reads should be destructive: the value is no longer ready
     comms_ready[id] = 0;
 
