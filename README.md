@@ -59,3 +59,15 @@ The former has headers for host code, and the latter has headers for device code
 [mclib]: https://github.com/bespoke-silicon-group/bsg_manycore/tree/master/software/bsg_manycore_lib
 [bsg_f1_macos_patch]: https://gist.github.com/avanhatt/d6df1eb375486f8aee9f8a74e8303168
 [bladerunner]: https://github.com/bespoke-silicon-group/bsg_bladerunner
+
+
+Checking Output
+---------------
+
+There is expected output from (most of) the examples in a `.out` file in each directory.
+You can check the output using [Turnt][].
+For example:
+
+    $ turnt noop add
+
+[turnt]: https://github.com/cucapra/turnt
