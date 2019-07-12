@@ -13,22 +13,24 @@
 INIT_TILE_GROUP_BARRIER(r_barrier, c_barrier, 0, bsg_tiles_X - 1, 0,
     bsg_tiles_Y - 1);
 
-void fib_0(void *c);
-void fib_1(void *c);
+void multiply_0(void *c);
+void multiply_1(void *c);
 
-int fib() {
+int matrix_multiply() {
     // API call to set the global tile ID values
     bsg_set_tile_x_y();
     int num_tiles = bsg_num_tiles;
     int tile_id = bsg_x_y_to_id(bsg_x, bsg_y);  
 
+    int x;
+
     switch(tile_id) {
         case 0:
-            fib_0(0);
+            multiply_0(0);
             break;
 
         case 1: 
-            fib_1(0);
+            multiply_1(0);
             break;
         default:
             break;
