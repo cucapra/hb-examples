@@ -37,6 +37,7 @@ The examples are arranged in order of increasing complexity:
 - `inter-tile-communication`: Shows simple inter-tile communication. Each tile passes a single value by writing into the next tile's memory. Demonstrates basic synchronization with `bsg_wait_while` and `bsg_remote_store`. 
 - `message-communication`: Shows inter-tile communication using a linear buffer per tile. Each tile receives a single argument to their buffer from the host. The first 3 tiles then forward messages to the final tile by writing into its memory. The final tile writes the return (the sum of all values) back to DRAM. Uses `send`/`receive` calls written on top of the `bsg_remote_load` and `bsg_remote_store` primitives.
 - `llvm-fibonacci`: Calculates the 10th fibonacci number from automatically-partitioned LLVM IR. The main device file, `fib.c`, calls a different function for each of the first two cores from the LLVM IR file, `fibonacci_loop_cores.ll`.
+- `llvm-matrix-multiply`: Multiplies two 3x3 matrices of doubles with automatically-partitioned LLVM IR. Writes and reads results to/from DRAM. 
 
 There is also an old example, `v0.4.2-vvadd`, which only works on an earlier version. It demonstrates a much different style of host/device communication that does not use the higher-level, "CUDA-style" API.
 
