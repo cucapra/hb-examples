@@ -55,4 +55,4 @@ $(DEVICE_TARGET): $(DEVICE_OBJS_ALL) $(DEVICE_NON_C_OBJS)
 	$(RISCV_LINK) $^ -o $@ $(RISCV_LINK_OPTS)
 
 $(DEVICE_OBJS_ALL): %.o: %.c
-	$(RISCV_GCC) $(RISCV_GCC_OPTS) $(OPT_LEVEL) $(spmd_defs) -c $< -o $@
+	$(RISCV_GCC) $(RISCV_GCC_OPTS) $(DEVICE_GCC_OPTS) $(OPT_LEVEL) $(spmd_defs) -c $< -o $@
