@@ -1,30 +1,16 @@
-#include <stdarg.h>
-
-void ee_vsprintf(char *buf) {
-  char *fmt = "xd\n";
-
+void ee_vsprintf(char *a) {
+  char *b = "xd\n";
   do {
-    fmt++;
-
-    switch (*fmt)
-    {
-      case 'o':
-      case 'X':
-      case 'x':
-      case 'd':
-      case 'i':
-        break;
-
-      default:
-        *buf++ = *fmt;
-        continue;
+    switch (*b) {
+    case 'o':
+    case 'X':
+    case 'x':
+    case 'd':
+    case 'i':
+      break;
+    default:
+      *a++ = *b;
     }
-
-    *buf = 'B';
-    ++buf;
-
-    fmt++;
-  } while (*fmt);
-
-  *buf = '\0';
+    b++;
+  } while (*b);
 }
