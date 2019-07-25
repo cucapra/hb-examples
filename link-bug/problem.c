@@ -1,16 +1,18 @@
-void ee_vsprintf(char *a) {
-  char *b = "xd\n";
+char ee_vsprintf() {
+  char out = 0;
+  char *b = "xdy";
   do {
     switch (*b) {
-    case 'o':
+    case 'a':
     case 'X':
     case 'x':
     case 'd':
     case 'i':
       break;
     default:
-      *a++ = *b;
+      out += (char)b;
     }
     b++;
   } while (*b);
+  return out;
 }

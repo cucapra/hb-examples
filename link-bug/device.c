@@ -20,13 +20,8 @@ int32_t yyy;
 #include "problem.c"
 
 int communicate(int32_t *src, int32_t *dest) {
-    char buf[256];
-    ee_vsprintf(buf);
-
-    // Print the string.
-    for (int i = 0; i < 256 && buf[i]; ++i) {
-      bsg_putchar(buf[i]);
-    }
+    char v = ee_vsprintf();
+    bsg_putchar(v);
 
     // Barrier to signal completion.
     bsg_tile_group_barrier(&r_barrier, &c_barrier);
