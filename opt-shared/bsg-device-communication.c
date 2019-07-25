@@ -17,7 +17,6 @@ void copy(char *dest, char *src, unsigned len) {
 }
 
 void send(void *value, int32_t size, int32_t to_core, int32_t addr, void *context) {
-    bsg_printf("s %d\n", addr);
     // HB memory operations require word-aligned pointers, *not* byte-aligned!
     // The struct layout is:
     //   { 
@@ -25,17 +24,20 @@ void send(void *value, int32_t size, int32_t to_core, int32_t addr, void *contex
     //     ready   [1 byte],
     //     padding [4 bytes],
    //.   }
-    int struct_size = size + 1 + 4;
-    int aligned_size = (struct_size + 3) / 4 * 4;
+    int size_with_ready = size + 1;
+    int aligned_size = (size_with_ready + 3) / 4 * 4;
 
     // Construct coordinates
     int to_x = bsg_id_to_x(to_core);
     int to_y = bsg_id_to_y(to_core);
 
-    // Make sure we aren't overwriting the old value 
-    int remote_ready = 1;
-    while (remote_ready) {
-        bsg_remote_load(to_x, to_y, (volatile void *)addr + size, remote_ready);
+    // Make sure we aren't overwriting the old value.
+    // Ready may not be word aligned, but we need to read the whole word.
+    // Read it into our *local* struct for convenience
+    int ready_addr = addr + size;
+    int ready_word_addr = ready_addr / 4 * 4;
+    while (*(char *)ready_addr) {
+        bsg_remote_load(to_x, to_y, ready_word_addr, *(int *)ready_word_addr);
     }
 
     // Copy the new value and ready flag to our *local* version of the struct
@@ -43,7 +45,8 @@ void send(void *value, int32_t size, int32_t to_core, int32_t addr, void *contex
     *((char *)addr + size) = 1;
 
     // Write our local struct to the *remote* destination struct
-    bsg_remote_store(to_x, to_y, (volatile void *)addr, aligned_size);
+    void *remote = bsg_remote_ptr(to_x, to_y, (int)addr);
+    copy(remote, (char *)addr, aligned_size);
 }
 
 void send_return(void *value, int32_t size, void *context) {
@@ -51,15 +54,14 @@ void send_return(void *value, int32_t size, void *context) {
 }
 
 void *_receive_shared(int32_t size, int32_t addr, void *context) {
-    // // Wait patiently until the value is ready
-    bsg_wait_while(!(volatile void *)addr + size);
+    // Wait patiently until the value is ready
+    bsg_wait_while(!*((volatile char *)addr + size));
 
-    // // Return this address into the buffer
+    // Return this address into the buffer
     return (void *)addr;
 }
 
 void *receive(int32_t size, int32_t from_core, int32_t addr, void *context) {
-    bsg_printf("r %d\n", addr);
     // Return this address into the buffer
     return _receive_shared(size, addr, context);;
 }

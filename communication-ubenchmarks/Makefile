@@ -15,9 +15,9 @@ override LLVM_DIR = /home/centos/bsg_bladerunner/llvm/llvm-install/llvm-install
 %.o: %.s
 	$(RISCV_GCC) $(RISCV_GCC_OPTS) $(spmd_defs) -c $< -o $@
 
-DEVICE_GCC_OPTS := -DDESTINATION_ID=$(DESTINATION_ID)
+DEVICE_GCC_OPTS := -DDESTINATION_ID=$(DESTINATION_ID) 
 
-# DEVICE_NON_C_OBJS := benchmark_comms.o
+DEVICE_NON_C_OBJS := benchmark_comms.o
 
 # Common Makefile to build host & device code.
 include ../hb.mk

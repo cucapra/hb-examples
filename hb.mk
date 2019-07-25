@@ -13,7 +13,7 @@ DEVICE_TARGET ?= device.riscv
 all: $(DEVICE_TARGET) $(HOST_TARGET)
 
 clean:
-	rm -rf $(HOST_OBJS) $(DEVICE_OBJS_ALL) $(HOST_TARGET) $(DEVICE_TARGET)
+	rm -rf $(HOST_OBJS) $(DEVICE_OBJS_ALL) $(HOST_TARGET) $(DEVICE_TARGET) $(DEVICE_NON_C_OBJS)
 
 
 # Build host code with the "normal" compiler.
