@@ -19,29 +19,14 @@ int32_t yyy;
 
 #include "problem.c"
 
-static void uart_send_char(char c) {
-  bsg_putchar( c );
-}
-
-int bsg_printf_x()
-{
-  char buf[256],*p;
-  int n=0;
-
-  ee_vsprintf(buf);
-  p=buf;
-
-  while (*p) {
-	uart_send_char(*p);
-	n++;
-	p++;
-  }
-
-  return n;
-}
-
 int communicate(int32_t *src, int32_t *dest) {
-    bsg_printf_x();
+    char buf[256];
+    ee_vsprintf(buf);
+
+    // Print the string.
+    for (int i = 0; i < 256 && buf[i]; ++i) {
+      bsg_putchar(buf[i]);
+    }
 
     // Barrier to signal completion.
     bsg_tile_group_barrier(&r_barrier, &c_barrier);
