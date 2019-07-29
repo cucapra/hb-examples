@@ -13,7 +13,7 @@
 const size_t TILES_X = 4;
 const size_t TILES_Y = 4;
 
-int do_fib(int n, int32_t *dest) {
+int do_fib(int32_t n, int32_t *dest) {
     int err;
 
     // Initialize the device.
@@ -30,7 +30,16 @@ int do_fib(int n, int32_t *dest) {
     err = hb_mc_application_init(&device, grid_dim, tg_dim, "fib", 0, NULL);
     if (err) return err;
 
-    send_argument(&n, sizeof(n), 0, 0, &device);
+    // For now, manually look up addresses of argument EVAs
+    hb_mc_eva_t arg1, arg2;
+    err = hb_mc_loader_symbol_to_eva(device.program->bin, device.program->bin_size,
+        "comms_0", &arg1);
+    err |= hb_mc_loader_symbol_to_eva(device.program->bin, device.program->bin_size,
+        "comms_5", &arg2);
+    if (err) return err;
+
+    send_argument(&n, sizeof(n), 0, arg1, &device);
+    send_argument(&n, sizeof(n), 1, arg2, &device);
 
     // Run the function.
     err = hb_mc_device_tile_groups_execute(&device);

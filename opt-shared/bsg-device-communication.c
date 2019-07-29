@@ -74,7 +74,7 @@ void free_comms(int32_t addr, int size, void *context) {
 
 void *receive_argument(int32_t size, int32_t addr, void *context) {
     // Argument reads should not be destructive
-    return _receive_shared(size, addr, context);;   
+    return _receive_shared(size, addr, context);;
 }
 
 void send_token(int to_core, int addr, void *context) {
