@@ -5,7 +5,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-volatile char global_return[100]  __attribute__((section(".dram")));
+
+
+#include <bsg_manycore.h>
+#include <bsg_set_tile_x_y.h>
+#include <bsg_cuda_lite_runtime.h>
+
+#include <stdint.h>
+
+#include "../shared/bsg-device-communication.h"
+
+// Set up the completion barrier.
+#define BSG_TILE_GROUP_X_DIM bsg_tiles_X
+#define BSG_TILE_GROUP_Y_DIM bsg_tiles_Y
+#include "bsg_tile_group_barrier.h"
+INIT_TILE_GROUP_BARRIER(r_barrier, c_barrier, 0, bsg_tiles_X - 1, 0,
+    bsg_tiles_Y - 1);
+
+extern volatile char return_struct;
 
 void copy(char *dest, char *src, unsigned len) {
     while (len) {
@@ -45,12 +62,12 @@ void send(void *value, int32_t size, int32_t to_core, int32_t addr, void *contex
     *((char *)addr + size) = 1;
 
     // Write our local struct to the *remote* destination struct
-    void *remote = bsg_remote_ptr(to_x, to_y, (int)addr);
+    void *remote = bsg_remote_ptr(to_x, to_y, addr);
     copy(remote, (char *)addr, aligned_size);
 }
 
 void send_return(void *value, int32_t size, void *context) {
-    copy((char *)global_return, value, size);
+    copy((char *)&return_struct, value, size);
 }
 
 void *_receive_shared(int32_t size, int32_t addr, void *context) {
@@ -81,4 +98,26 @@ void send_token(int to_core, int addr, void *context) {
 }
 
 void receive_token(int addr, void *context) {
+}
+
+void *call_partitioned_functions(int num_functions, void (**function_pts)(void *), void *context) {
+    bsg_set_tile_x_y();
+    int num_tiles = bsg_num_tiles;
+    int tile_id = bsg_x_y_to_id(bsg_x, bsg_y);  
+
+    // TODO: this will misplace tiles if IDs are skipped
+    if (tile_id < num_functions) {
+        function_pts[tile_id](0);
+    }
+
+    bsg_tile_group_barrier(&r_barrier, &c_barrier);
+    return NULL;
+}
+
+// This program is a complete executable, so it needs a main. Our main just
+// needs to call this function to wait for instructions (i.e., to call the
+// function above).
+int main() {
+   __wait_until_valid_func();
+   return 0;
 }

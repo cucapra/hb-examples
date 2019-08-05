@@ -22,3 +22,6 @@ extern void send_token(int to_core, int addr, void *context);
 
 // Receive a token for synchronization. Context is implementation-specific.
 extern void receive_token(int addr, void *context);
+
+extern void *call_partitioned_functions(int num_functions, 
+    void (**function_pts)(void *), void *context);
