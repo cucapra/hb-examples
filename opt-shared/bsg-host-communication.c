@@ -60,14 +60,11 @@ int32_t address_for_symbol(char *symbol, void *context) {
         fprintf(stderr, "hb_mc_loader_symbol_to_eva failed\n");
         return 0;
     }
-
     return eva;
 }
 
 
 void send_argument(void *value, int32_t size, int32_t to_core, int32_t addr, void *context) {
-    int err;
-
     // HB memory operations require word-aligned pointers, *not* byte-aligned!
     // Round the value size plus 1 bye for the ready flag up to the nearest word.
     int aligned_size = _align_size(size + 1);
@@ -89,17 +86,41 @@ void send_argument(void *value, int32_t size, int32_t to_core, int32_t addr, voi
 
     // Write the local struct to the tile's copy of the struct
     hb_mc_eva_t tile_struct_eva = (hb_mc_eva_t)addr;
-    err = hb_mc_manycore_eva_write(device->mc, &default_map, &tile_coordinate,
+    int err = hb_mc_manycore_eva_write(device->mc, &default_map, &tile_coordinate,
         &tile_struct_eva, local_struct, aligned_size); 
+    if (err) {
+        fprintf(stderr, "hb_mc_manycore_eva_write failed\n");
+    }
 }
+
+void retrieve_global(void *global, int32_t size, int32_t addr, void *context) {
+    int aligned_size = (_align_size(size + 1)) * 9;
+
+    void *aligned_space = malloc(aligned_size);
+
+    // Context is the device
+    hb_mc_device_t *device = (hb_mc_device_t *)context;
+
+    // Copy the DRAM value to the host value
+    hb_mc_coordinate_t host_coordinate = hb_mc_manycore_get_host_coordinate(device->mc);
+    hb_mc_eva_t global_eva = (hb_mc_eva_t)addr;
+    int err = hb_mc_manycore_eva_read(device->mc, &default_map, &host_coordinate,
+        &global_eva, aligned_space, aligned_size); 
+    if (err) {
+        fprintf(stderr, "hb_mc_manycore_eva_read failed\n");
+    }
+
+    memcpy(global, aligned_space, size);
+}
+
 
 void *receive_return(int32_t size, void *context) {
     int err;
 
     // HB memory operations require word-aligned pointers, *not* byte-aligned!
-    size = _align_size(size);
+    int aligned_size = _align_size(size);
 
-    void *value = malloc(size);
+    void *value = malloc(aligned_size);
 
     // Context is the device
     hb_mc_device_t *device = (hb_mc_device_t *)context;
@@ -115,7 +136,7 @@ void *receive_return(int32_t size, void *context) {
     // EVA read the single return value
     hb_mc_coordinate_t host_coordinate = hb_mc_manycore_get_host_coordinate(device->mc); 
     err = hb_mc_manycore_eva_read(device->mc, &default_map, &host_coordinate,
-        &global_return_eva, value, size); 
+        &global_return_eva, value, aligned_size); 
     if (err) {
         fprintf(stderr, "hb_mc_device_memcpy to host failed\n");
         return NULL;

@@ -13,6 +13,9 @@ extern void send_argument(void *value, int32_t size, int32_t to_core,
 // Receive a return value back to the host. Context here is the device.
 extern void *receive_return(int32_t size, void *context);
 
+extern void retrieve_global(void *global, int32_t size, int32_t addr, 
+    void *context);
+
 // Call to execute device code
 extern void start_device_execution();
 
