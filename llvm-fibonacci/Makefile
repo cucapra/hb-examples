@@ -1,21 +1,11 @@
-HOST_SRCS := ../shared/bsg-host-communication.c host.c
-DEVICE_SRCS := ../shared/bsg-device-communication.c fib.c
+HOST_SRCS := ../opt-shared/bsg-host-communication.c
+DEVICE_SRCS := ../opt-shared/bsg-device-communication.c
 
 HOST_TARGET := host
-DEVICE_TARGET := fib.riscv
+DEVICE_TARGET := device.riscv
 
-CLANG := 1
-
-override LLVM_DIR = /home/centos/bsg_bladerunner/llvm/llvm-install/llvm-install
-
-# Build the LLVM IR 
-%.s: %.ll 
-	$(LLVM_CLANG) $(RISCV_GCC_OPTS) $(spmd_defs) -fno-addrsig $(INCS) $< -S -o $@
-
-%.o: %.s
-	$(RISCV_GCC) $(RISCV_GCC_OPTS) $(spmd_defs) -c $< -o $@
-
-DEVICE_NON_C_OBJS := fibonacci-loop_cores.o
+HOST_LLVM_IR_OBJS := fibonacci-loop_host.o
+DEVICE_LLVM_IR_OBJS := fibonacci-loop_comms.o fibonacci-loop_cores.o
 
 # Common Makefile to build host & device code.
 include ../hb.mk
