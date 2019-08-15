@@ -5,63 +5,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-// --- Communication buffer number of elements ---
 
-// NUM_COMMS should be defined from the compiler/Makefile
-#ifndef NUM_COMMS
-#define NUM_COMMS 100
-#endif // NUM_COMMS
 
-#ifndef COMMS_BUFFER_SIZE
-#define COMMS_BUFFER_SIZE NUM_COMMS * sizeof(long long)
-#endif // NUM_COMMS
+#include <bsg_manycore.h>
+#include <bsg_set_tile_x_y.h>
+#include <bsg_cuda_lite_runtime.h>
 
-// --- Communication buffer ---
-// Data and metadata should be kept on the *receiving* tile's memory
-volatile char comms_buffer[COMMS_BUFFER_SIZE];
+#include <stdint.h>
 
-// --- Communication buffer metadata ---
-// Communication data for the ID is ready to be read
-volatile int32_t comms_ready[NUM_COMMS];
-// Start index into the data buffer
-volatile int32_t comms_start_idx[NUM_COMMS];
-// Size of the value for this communication
-volatile int32_t comms_size[NUM_COMMS];
+#include "../shared/bsg-device-communication.h"
 
-// Treat the communication buffer as a linear buffer for now
-volatile int32_t comms_buffer_start = 0;
+// Set up the completion barrier.
+#define BSG_TILE_GROUP_X_DIM bsg_tiles_X
+#define BSG_TILE_GROUP_Y_DIM bsg_tiles_Y
+#include "bsg_tile_group_barrier.h"
+INIT_TILE_GROUP_BARRIER(r_barrier, c_barrier, 0, bsg_tiles_X - 1, 0,
+    bsg_tiles_Y - 1);
 
-// Hacky write lock for now!
-volatile int32_t write_lock = 0;
-
-// Return value(s). Note this attribute specifies that this is shared DRAM memory
-volatile char global_return[COMMS_BUFFER_SIZE]  __attribute__((section(".dram")));
-
-void _aquire_remote_write_lock(int to_x, int to_y) {
-    volatile int write_lock_taken = 1;
-    while (write_lock_taken) {
-        bsg_remote_load(to_x, to_y, &write_lock, write_lock_taken);
-    }
-
-    // Mark that we are writing 
-    bsg_remote_store(to_x, to_y, &write_lock, 1);
-}
-
-void _release_remote_write_lock(int to_x, int to_y) {
-    // Mark that we are done writing 
-    bsg_remote_store(to_x, to_y, &write_lock, 0);
-}
-
-void _aquire_local_write_lock() {
-    bsg_wait_while(write_lock);
-    write_lock = 1;
-}
-
-void _release_local_write_lock() {
-    // Mark that we are done writing 
-    write_lock = 0;
-
-}
+extern volatile char return_struct;
 
 void copy(char *dest, char *src, unsigned len) {
     while (len) {
@@ -72,119 +33,91 @@ void copy(char *dest, char *src, unsigned len) {
     }
 }
 
-// When sending something twice, don't add to the end!!!
-void send(void *value, int32_t size, int32_t to_core, int32_t id, void *context) {
+void send(void *value, int32_t size, int32_t to_core, int32_t addr, void *context) {
     // HB memory operations require word-aligned pointers, *not* byte-aligned!
-    int aligned_size = (size + 3) / 4 * 4;
+    // The struct layout is:
+    //   { 
+    //     value   [size bytes],
+    //     ready   [1 byte],
+    //     padding [4 bytes],
+   //.   }
+    int size_with_ready = size + 1;
+    int aligned_size = (size_with_ready + 3) / 4 * 4;
 
     // Construct coordinates
     int to_x = bsg_id_to_x(to_core);
     int to_y = bsg_id_to_y(to_core);
 
-    // Make sure we aren't overwriting the old value 
-    int remote_ready = 1;
-    while (remote_ready) {
-        bsg_remote_load(to_x, to_y, &comms_ready[id], remote_ready);
+    // Make sure we aren't overwriting the old value.
+    // Ready may not be word aligned, but we need to read the whole word.
+    // Read it into our *local* struct for convenience
+    int ready_addr = addr + size;
+    int ready_word_addr = ready_addr / 4 * 4;
+    while (*(char *)ready_addr) {
+        bsg_remote_load(to_x, to_y, ready_word_addr, *(int *)ready_word_addr);
     }
 
-    // Make sure no one else is writing to the buffer right now
-    _aquire_remote_write_lock(to_x, to_y);
+    // Copy the new value and ready flag to our *local* version of the struct
+    copy((char *)addr, value, size);
+    *((char *)addr + size) = 1;
 
-    // Check if we already have taken a spot for this ID
-    int existing_size;
-    bsg_remote_load(to_x, to_y, &comms_size[id], existing_size);
-
-    int start_idx;
-
-    // If we don't already have a spot, create one
-    if (existing_size == 0) {
-        // Grab the start of the communication buffer for the recepient
-        bsg_remote_load(to_x, to_y, &comms_buffer_start, start_idx);
-
-        // Increment the recepient's buffer start by the size
-        bsg_remote_store(to_x, to_y, &comms_buffer_start, start_idx + aligned_size);
-
-        // Set the communication buffer metadata on the recepient for this ID
-        bsg_remote_store(to_x, to_y, &comms_start_idx[id], start_idx);
-        bsg_remote_store(to_x, to_y, &comms_size[id], aligned_size);
-    } else {
-        bsg_remote_load(to_x, to_y, &comms_start_idx[id], start_idx);
-    }
-
-    // Write the actual value into the communication buffer on the recepient
-    char *buffer_value_ptr = (void *)bsg_remote_ptr(to_x, to_y, 
-        &comms_buffer[start_idx]);    
-    copy(buffer_value_ptr, value, size);
-
-    // Finally, write out to the recepient that this value is ready
-    bsg_remote_store(to_x, to_y, &comms_ready[id], 1);
-
-    // Mark that we are done writing 
-    _release_remote_write_lock(to_x, to_y);
+    // Write our local struct to the *remote* destination struct
+    void *remote = bsg_remote_ptr(to_x, to_y, addr);
+    copy(remote, (char *)addr, aligned_size);
 }
 
 void send_return(void *value, int32_t size, void *context) {
-    copy(global_return, value, size);
+    copy((char *)&return_struct, value, size);
 }
 
-void *_receive_shared(int32_t size, int32_t id, void *context) {
+void *_receive_shared(int32_t size, int32_t addr, void *context) {
     // Wait patiently until the value is ready
-    bsg_wait_while(!comms_ready[id]);
+    bsg_wait_while(!*((volatile char *)addr + size));
 
-    // Metdata should already be written by sender
-    int start_idx = comms_start_idx[id];
-    int actual_size = comms_size[id];
+    // Return this address into the buffer
+    return (void *)addr;
+}
 
-    // Sanity check sizes match
-    if (actual_size != size) {
-        // TODO: error on device
+void *receive(int32_t size, int32_t from_core, int32_t addr, void *context) {
+    // Return this address into the buffer
+    return _receive_shared(size, addr, context);;
+}
+
+void free_comms(int32_t addr, int size, void *context) {
+    // Reset our location struct's ready flag to 0
+    volatile char *ready_ptr = (volatile char *)addr + size;
+    *ready_ptr = '\0';
+}
+
+void *receive_argument(int32_t size, int32_t addr, void *context) {
+    // Argument reads should not be destructive
+    return _receive_shared(size, addr, context);;
+}
+
+void send_token(int to_core, int addr, void *context) {
+}
+
+void receive_token(int addr, void *context) {
+}
+
+void *call_partitioned_functions(int num_functions, void (**function_pts)(void *), void *context) {
+    bsg_set_tile_x_y();
+    int num_tiles = bsg_num_tiles;
+    int tile_id = bsg_x_y_to_id(bsg_x, bsg_y);  
+
+    // TODO: this will misplace tiles if IDs are skipped
+    if (tile_id < num_functions) {
+        function_pts[tile_id](0);
     }
 
-    // Return this address into the buffer
-    return &comms_buffer[start_idx];
+    bsg_tile_group_barrier(&r_barrier, &c_barrier);
+    return NULL;
 }
 
-void *receive(int32_t size, int32_t from_core, int32_t id, void *context) {
-    void *value = _receive_shared(size, id, context);
-
-    _aquire_local_write_lock();
-
-    // Regular reads should be destructive: the value is no longer ready
-    comms_ready[id] = 0;
-
-    _release_local_write_lock();
-
-    // Return this address into the buffer
-    return value;
-}
-
-void *receive_argument(int32_t size, int32_t id, void *context) {
-    // Argument reads should not be destructive
-    return _receive_shared(size, id, context);;   
-}
-
-void send_token(int to_core, int id, void *context) {
-    // Construct coordinates
-    int to_x = bsg_id_to_x(to_core);
-    int to_y = bsg_id_to_y(to_core);
-
-    // Make sure no one else is writing right now
-    _aquire_remote_write_lock(to_x, to_y);
-
-    // Write out to the recepient that this token is ready
-    bsg_remote_store(to_x, to_y, &comms_ready[id], 1);
-
-    // Mark that we are done writing 
-    _release_remote_write_lock(to_x, to_y);
-}
-
-void receive_token(int id, void *context) {
-    // Wait patiently until we get the token
-    bsg_wait_while(!comms_ready[id]);
-    
-    _aquire_local_write_lock();
-    // Regular reads should be destructive: the value is no longer ready
-    comms_ready[id] = 0;
-
-    _release_local_write_lock();
+// This program is a complete executable, so it needs a main. Our main just
+// needs to call this function to wait for instructions (i.e., to call the
+// function above).
+int main() {
+   __wait_until_valid_func();
+   return 0;
 }

@@ -13,8 +13,6 @@
 
 #include <stdint.h>
 
-#include "../shared/bsg-device-communication.h"
-
 // Set up the completion barrier.
 #define BSG_TILE_GROUP_X_DIM bsg_tiles_X
 #define BSG_TILE_GROUP_Y_DIM bsg_tiles_Y
