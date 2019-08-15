@@ -12,4 +12,4 @@ RUN rm -rf ms/*.{ll,bc,out}
 SHELL ["/bin/bash", "-c"]
 
 # Run compilation when the container launches
-ENTRYPOINT ["make", "ms/merge-sort_cores.ll", "TARGET=bsg_manycore"]
+ENTRYPOINT ["make", "ms/merge-sort_cores.ll", "TARGET=bsg_manycore", "TIMEOUT=1"]
