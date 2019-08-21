@@ -1,6 +1,6 @@
 ; ModuleID = 'cores_module'
 source_filename = "cores_module"
-target datalayout = "e-m:e-p:32:32-i64:64-n32-S128"
+target datalayout = "e-m:e-p:32:32-i32:64-n32-S128"
 target triple = "riscv32-unknown-elf"
 
 @alloca = global i32 0, section ".dram", align 16
@@ -25,7 +25,9 @@ declare void @send_return(i8*, i32, i8*)
 
 declare i8* @call_partitioned_functions(i32, void (i8*)**, i8*)
 
-declare void @print_int(i8*)
+declare void @print_int(i32)
+
+declare void @print_addr(i8*)
 
 ; Function Attrs: nounwind
 declare i8* @llvm.stacksave() #0
@@ -51,17 +53,22 @@ define void @_p_bar_0(i8*) {
 entry:
   br label %l
 
+
+; loop 250 times
 l:                                                ; preds = %l, %entry
-  %new_phi = phi i64 [ 0, %entry ], [ %add, %l ]
+  %new_phi = phi i32 [ 0, %entry ], [ %add, %l ]
 
   %send_alloca = alloca i32
   store i32 1, i32* %send_alloca
   %send_cast = bitcast i32* %send_alloca to i8*
-  call void @print_int(i8* %send_cast)
+  call void @print_addr(i8* %send_cast)
+
+  call void @print_int(i32 %new_phi)
+
 
   ; loop mechanism
-  %add = add nuw nsw i64 %new_phi, 1, !partition !0, !start !5, !end !6
-  %br = icmp eq i64 %add, 5000, !partition !0, !start !4, !end !5
+  %add = add nuw nsw i32 %new_phi, 1, !partition !0, !start !5, !end !6
+  %br = icmp eq i32 %add, 247, !partition !0, !start !4, !end !5
   br i1 %br, label %l1, label %l
 
 l1:                                               ; preds = %l
