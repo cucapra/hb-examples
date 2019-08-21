@@ -25,3 +25,9 @@ extern void receive_token(int addr, void *context);
 
 extern void *call_partitioned_functions(int num_functions, 
     void (**function_pts)(void *), void *context);
+
+// bsg_print_int wrapper
+extern void print_int(int32_t i);
+
+// bsg_print_int for both the address and the int32_t value at the address
+extern void print_addr(void *a);

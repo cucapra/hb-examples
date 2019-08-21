@@ -5,15 +5,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
-
 #include <bsg_manycore.h>
 #include <bsg_set_tile_x_y.h>
 #include <bsg_cuda_lite_runtime.h>
 
 #include <stdint.h>
-
-#include "../shared/bsg-device-communication.h"
 
 // Set up the completion barrier.
 #define BSG_TILE_GROUP_X_DIM bsg_tiles_X
@@ -24,13 +20,25 @@ INIT_TILE_GROUP_BARRIER(r_barrier, c_barrier, 0, bsg_tiles_X - 1, 0,
 
 extern volatile char return_struct;
 
+extern volatile char comms_19;
+
 void copy(char *dest, char *src, unsigned len) {
-    while (len) {
+    while (len > 0) {
         *dest = *src;
         dest++;
         src++;
         len -= sizeof(char);
     }
+
+}
+
+void print_int(int32_t i) {
+    bsg_print_int(i);
+}
+
+void print_addr(void *a) {
+    bsg_print_int(a);
+    bsg_print_int(*(int32_t *)a);
 }
 
 void send(void *value, int32_t size, int32_t to_core, int32_t addr, void *context) {
@@ -40,7 +48,7 @@ void send(void *value, int32_t size, int32_t to_core, int32_t addr, void *contex
     //     value   [size bytes],
     //     ready   [1 byte],
     //     padding [4 bytes],
-   //.   }
+    //.   }
     int size_with_ready = size + 1;
     int aligned_size = (size_with_ready + 3) / 4 * 4;
 
@@ -53,16 +61,21 @@ void send(void *value, int32_t size, int32_t to_core, int32_t addr, void *contex
     // Read it into our *local* struct for convenience
     int ready_addr = addr + size;
     int ready_word_addr = ready_addr / 4 * 4;
-    while (*(char *)ready_addr) {
-        bsg_remote_load(to_x, to_y, ready_word_addr, *(int *)ready_word_addr);
-    }
+    do {
+         bsg_remote_load(to_x, to_y, ready_word_addr, *(int *)ready_word_addr);
+    } while (*(char *)ready_addr);
+
+    // Reset our local value
+    *(int *)ready_word_addr = 0;
 
     // Copy the new value and ready flag to our *local* version of the struct
     copy((char *)addr, value, size);
-    *((char *)addr + size) = 1;
+
+    *(char *)ready_addr = 1;
 
     // Write our local struct to the *remote* destination struct
     void *remote = bsg_remote_ptr(to_x, to_y, addr);
+
     copy(remote, (char *)addr, aligned_size);
 }
 
@@ -74,13 +87,13 @@ void *_receive_shared(int32_t size, int32_t addr, void *context) {
     // Wait patiently until the value is ready
     bsg_wait_while(!*((volatile char *)addr + size));
 
-    // Return this address into the buffer
+    // Return this address 
     return (void *)addr;
 }
 
 void *receive(int32_t size, int32_t from_core, int32_t addr, void *context) {
-    // Return this address into the buffer
-    return _receive_shared(size, addr, context);;
+    // Return this address 
+    return _receive_shared(size, addr, context);
 }
 
 void free_comms(int32_t addr, int size, void *context) {
