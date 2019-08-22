@@ -1,5 +1,5 @@
-HOST_SRCS := ../opt-shared/bsg-host-communication.c
-DEVICE_SRCS := ../opt-shared/bsg-device-communication.c
+HOST_SRCS := ../shared/bsg-host-communication.c
+DEVICE_SRCS := ../shared/bsg-device-communication.c
 
 HOST_TARGET := host
 DEVICE_TARGET := device.riscv

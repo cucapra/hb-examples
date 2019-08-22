@@ -62,13 +62,12 @@ l:                                                ; preds = %l, %entry
   store i32 1, i32* %send_alloca
   %send_cast = bitcast i32* %send_alloca to i8*
   call void @print_addr(i8* %send_cast)
-
   call void @print_int(i32 %new_phi)
 
 
   ; loop mechanism
   %add = add nuw nsw i32 %new_phi, 1, !partition !0, !start !5, !end !6
-  %br = icmp eq i32 %add, 247, !partition !0, !start !4, !end !5
+  %br = icmp eq i32 %add, 250, !partition !0, !start !4, !end !5
   br i1 %br, label %l1, label %l
 
 l1:                                               ; preds = %l
