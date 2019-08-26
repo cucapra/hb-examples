@@ -7,18 +7,17 @@ target triple = "riscv32-unknown-elf"
 @arg_0 = global [6 x i8] c"arg_0\00"
 @arg_7 = global [6 x i8] c"arg_7\00"
 @comms_1 = external global { i32, i1, i32 }
-@comms_2 = external global { i1, i1, i32 }
+@comms_2 = external global { i32, i1, i32 }
 @comms_3 = external global { i32, i1, i32 }
-@comms_4 = external global { i32, i1, i32 }
+@comms_4 = external global { i1, i1, i32 }
 @comms_5 = external global { i32, i1, i32 }
 @comms_6 = external global { i32, i1, i32 }
-@comms_8 = external global { i1, i1, i32 }
+@comms_8 = external global { i32, i1, i32 }
 @comms_9 = external global { i32, i1, i32 }
 @comms_10 = external global { i32, i1, i32 }
 @comms_11 = external global { i32, i1, i32 }
-@comms_12 = external global { i32, i1, i32 }
+@comms_12 = external global { i1, i1, i32 }
 @comms_13 = external global { i1, i1, i32 }
-@comms_14 = external global { i1, i1, i32 }
 @return_struct = external global { i32, i1, i32 }
 
 ; Function Attrs: norecurse nounwind readnone uwtable
@@ -28,14 +27,14 @@ define dso_local i32 @_p_fib(i32) local_unnamed_addr #0 {
 
 ; <label>:3:                                      ; preds = %1, %3
   %4 = phi i32 [ %11, %3 ], [ 0, %1 ], !partition !2, !start !4, !end !4
-  %5 = phi i32 [ %10, %3 ], [ 1, %1 ], !partition !5, !start !4, !end !4
-  %6 = phi i32 [ %9, %3 ], [ 0, %1 ], !partition !2, !start !4, !end !4
-  %7 = icmp ult i32 %4, 2, !partition !2, !start !2, !end !3
-  %8 = add nsw i32 %5, %6, !partition !5, !start !5, !end !4
+  %5 = phi i32 [ %10, %3 ], [ 1, %1 ], !partition !5, !start !6, !end !6
+  %6 = phi i32 [ %9, %3 ], [ 0, %1 ], !partition !5, !start !6, !end !6
+  %7 = icmp ult i32 %4, 2, !partition !5, !start !5, !end !6
+  %8 = add nsw i32 %5, %6, !partition !2, !start !2, !end !3
   %9 = select i1 %7, i32 %6, i32 %5, !partition !5, !start !2, !end !5
-  %10 = select i1 %7, i32 %5, i32 %8, !partition !2, !start !3, !end !4
-  %11 = add nuw nsw i32 %4, 1, !partition !2, !start !4, !end !6
-  %12 = icmp eq i32 %11, %0, !partition !5, !start !4, !end !6
+  %10 = select i1 %7, i32 %5, i32 %8, !partition !2, !start !3, !end !6
+  %11 = add nuw nsw i32 %4, 1, !partition !2, !start !6, !end !4
+  %12 = icmp eq i32 %11, %0, !partition !5, !start !6, !end !4
   br i1 %12, label %13, label %3
 
 ; <label>:13:                                     ; preds = %3
@@ -121,9 +120,9 @@ attributes #3 = { nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disa
 !1 = !{!"clang version 8.0.1 (tags/RELEASE_801/final)"}
 !2 = !{!"0"}
 !3 = !{!"3"}
-!4 = !{!"4"}
+!4 = !{!"7"}
 !5 = !{!"1"}
-!6 = !{!"7"}
+!6 = !{!"4"}
 !7 = !{!8, !8, i64 0}
 !8 = !{!"any pointer", !9, i64 0}
 !9 = !{!"omnipotent char", !10, i64 0}

@@ -10,19 +10,17 @@ target triple = "riscv32-unknown-elf"
 @a.1 = global [2 x i8] c"a\00"
 @b.2 = global [2 x i8] c"b\00"
 @res.3 = global [4 x i8] c"res\00"
-@comms_0 = external global { i64, i1, i32 }
-@comms_1 = external global { i64, i1, i32 }
-@comms_2 = external global { i64, i1, i32 }
+@comms_0 = external global { double, i1, i32 }
+@comms_1 = external global { double, i1, i32 }
+@comms_2 = external global { double, i1, i32 }
 @comms_3 = external global { i64, i1, i32 }
-@comms_4 = external global { double, i1, i32 }
+@comms_4 = external global { i64, i1, i32 }
 @comms_5 = external global { double, i1, i32 }
 @comms_6 = external global { i64, i1, i32 }
-@comms_7 = external global { i64, i1, i32 }
-@comms_8 = external global { i64, i1, i32 }
-@comms_9 = external global { i64, i1, i32 }
+@comms_7 = external global { double, i1, i32 }
+@comms_8 = external global { i1, i1, i32 }
+@comms_9 = external global { i1, i1, i32 }
 @comms_10 = external global { i1, i1, i32 }
-@comms_11 = external global { i1, i1, i32 }
-@comms_12 = external global { i1, i1, i32 }
 @return_struct = external global { i1, i1, i32 }
 
 ; Function Attrs: norecurse nounwind uwtable
@@ -34,37 +32,37 @@ define dso_local void @_p_multiply() local_unnamed_addr #0 {
   br label %3
 
 ; <label>:3:                                      ; preds = %17, %1
-  %4 = phi i64 [ 0, %1 ], [ %18, %17 ], !partition !3, !start !2, !end !2
-  %5 = getelementptr inbounds [3 x [3 x double]], [3 x [3 x double]]* @res, i64 0, i64 %2, i64 %4, !partition !2, !start !3, !end !4
-  store double 0.000000e+00, double* %5, align 8, !tbaa !5, !partition !2, !start !2, !end !3
+  %4 = phi i64 [ 0, %1 ], [ %18, %17 ], !partition !2, !start !2, !end !2
+  %5 = getelementptr inbounds [3 x [3 x double]], [3 x [3 x double]]* @res, i64 0, i64 %2, i64 %4, !partition !2, !start !2, !end !2
+  store double 0.000000e+00, double* %5, align 8, !tbaa !3, !partition !2, !start !2, !end !2
   br label %6
 
 ; <label>:6:                                      ; preds = %6, %3
-  %7 = phi i64 [ 0, %3 ], [ %15, %6 ], !partition !3, !start !2, !end !2
-  %8 = phi double [ 0.000000e+00, %3 ], [ %14, %6 ], !partition !3, !start !2, !end !2
-  %9 = getelementptr inbounds [3 x [3 x double]], [3 x [3 x double]]* @a, i64 0, i64 %2, i64 %7, !partition !2, !start !3, !end !4
-  %10 = load double, double* %9, align 8, !tbaa !5, !partition !2, !start !9, !end !10
-  %11 = getelementptr inbounds [3 x [3 x double]], [3 x [3 x double]]* @b, i64 0, i64 %7, i64 %4, !partition !2, !start !11, !end !9
-  %12 = load double, double* %11, align 8, !tbaa !5, !partition !2, !start !2, !end !3
-  %13 = fmul double %10, %12, !partition !2, !start !4, !end !11
-  %14 = fadd double %8, %13, !partition !3, !start !4, !end !11
-  %15 = add nuw nsw i64 %7, 1, !partition !3, !start !11, !end !9
-  %16 = icmp eq i64 %15, 3, !partition !3, !start !3, !end !4
+  %7 = phi i64 [ 0, %3 ], [ %15, %6 ], !partition !2, !start !7, !end !7
+  %8 = phi double [ 0.000000e+00, %3 ], [ %14, %6 ], !partition !2, !start !7, !end !7
+  %9 = getelementptr inbounds [3 x [3 x double]], [3 x [3 x double]]* @a, i64 0, i64 %2, i64 %7, !partition !2, !start !8, !end !9
+  %10 = load double, double* %9, align 8, !tbaa !3, !partition !2, !start !10, !end !7
+  %11 = getelementptr inbounds [3 x [3 x double]], [3 x [3 x double]]* @b, i64 0, i64 %7, i64 %4, !partition !2, !start !9, !end !11
+  %12 = load double, double* %11, align 8, !tbaa !3, !partition !2, !start !2, !end !10
+  %13 = fmul double %10, %12, !partition !10, !start !12, !end !9
+  %14 = fadd double %8, %13, !partition !10, !start !2, !end !7
+  %15 = add nuw nsw i64 %7, 1, !partition !10, !start !7, !end !8
+  %16 = icmp eq i64 %15, 3, !partition !2, !start !7, !end !8
   br i1 %16, label %17, label %6
 
 ; <label>:17:                                     ; preds = %6
-  store double %14, double* %5, align 8, !tbaa !5, !partition !2, !start !2, !end !3
-  %18 = add nuw nsw i64 %4, 1, !partition !2, !start !3, !end !4
-  %19 = icmp eq i64 %18, 3, !partition !3, !start !2, !end !12
+  store double %14, double* %5, align 8, !tbaa !3, !partition !2, !start !2, !end !2
+  %18 = add nuw nsw i64 %4, 1, !partition !2, !start !2, !end !2
+  %19 = icmp eq i64 %18, 3, !partition !2, !start !2, !end !2
   br i1 %19, label %20, label %3
 
 ; <label>:20:                                     ; preds = %17
-  %21 = add nuw nsw i64 %2, 1, !partition !2, !start !3, !end !4
-  %22 = icmp eq i64 %21, 3, !partition !3, !start !2, !end !12
+  %21 = add nuw nsw i64 %2, 1, !partition !2, !start !2, !end !2
+  %22 = icmp eq i64 %21, 3, !partition !2, !start !2, !end !2
   br i1 %22, label %23, label %1
 
 ; <label>:23:                                     ; preds = %20
-  ret void, !partition !2, !start !2, !end !3
+  ret void, !partition !2, !start !2, !end !10
 }
 
 ; Function Attrs: nounwind uwtable
@@ -79,7 +77,7 @@ define dso_local i32 @main(i32, i8** nocapture readnone) local_unnamed_addr #1 {
 ; <label>:5:                                      ; preds = %5, %3
   %6 = phi i64 [ 0, %3 ], [ %10, %5 ]
   %7 = getelementptr inbounds [3 x [3 x double]], [3 x [3 x double]]* @res, i64 0, i64 %4, i64 %6
-  %8 = load double, double* %7, align 8, !tbaa !5
+  %8 = load double, double* %7, align 8, !tbaa !3
   %9 = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i64 0, i64 0), double %8)
   %10 = add nuw nsw i64 %6, 1
   %11 = icmp eq i64 %10, 3
@@ -150,13 +148,13 @@ attributes #3 = { nounwind }
 !0 = !{i32 1, !"wchar_size", i32 4}
 !1 = !{!"clang version 8.0.1 (tags/RELEASE_801/final)"}
 !2 = !{!"0"}
-!3 = !{!"1"}
-!4 = !{!"4"}
-!5 = !{!6, !6, i64 0}
-!6 = !{!"double", !7, i64 0}
-!7 = !{!"omnipotent char", !8, i64 0}
-!8 = !{!"Simple C/C++ TBAA"}
-!9 = !{!"9"}
-!10 = !{!"10"}
-!11 = !{!"6"}
-!12 = !{!"3"}
+!3 = !{!4, !4, i64 0}
+!4 = !{!"double", !5, i64 0}
+!5 = !{!"omnipotent char", !6, i64 0}
+!6 = !{!"Simple C/C++ TBAA"}
+!7 = !{!"2"}
+!8 = !{!"5"}
+!9 = !{!"8"}
+!10 = !{!"1"}
+!11 = !{!"11"}
+!12 = !{!"6"}

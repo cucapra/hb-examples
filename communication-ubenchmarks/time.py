@@ -3,12 +3,15 @@ import subprocess
 import csv
 import time as ti
 
-noop_time = 0.103
+noop_time = 0
 num_runs = 3
 
 def call(s):
     # subprocess.call(s.split())
-    subprocess.call(s.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    code = subprocess.call(s.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if code:
+        print("Subprocess call failed")
+        exit(0)
 
 def timeDestination(d):
 
@@ -23,7 +26,7 @@ def timeDestination(d):
     end = timeit.default_timer()
     time = end - start
 
-    print("Adjusted time to core %s: "%(d) + str(time - 0.103)) #elapsed time in seconds
+    print("Adjusted time to core %s: "%(d) + str(time)) #elapsed time in seconds
 
     return time
 
@@ -50,6 +53,6 @@ with open("time_data.csv", 'w') as f:
                 "manhattan distance" : manhattan_dist,
                 "total time" : time,
                 "adjusted time" : adjusted_time,
-                "adjusted time / communication" : (adjusted_time / 20000), 
+                "adjusted time / communication" : (adjusted_time / 100000), 
                 })
         
