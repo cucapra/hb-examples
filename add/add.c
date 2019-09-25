@@ -11,11 +11,15 @@
 INIT_TILE_GROUP_BARRIER(r_barrier, c_barrier, 0, bsg_tiles_X - 1, 0,
     bsg_tiles_Y - 1);
 
+int32_t add_fun(int32_t *src1, int32_t *src2);
+
 // The function we call from the host. Communication with the host works by
 // leaving results in memory for the host to pick up.
 int add(int32_t *src1, int32_t *src2, int32_t *dest) {
     // Some actual work to run on the device!
-    *dest = *src1 + *src2;
+    // *dest = *src1 + *src2;
+
+    *dest = add_fun(*src1, *src2);
 
     // Barrier to signal completion.
     bsg_tile_group_barrier(&r_barrier, &c_barrier);
